@@ -1,0 +1,14 @@
+analysis/
+build/
+backup/
+reference/
+artist-handoff/
+translations/catalog.jsonl
+translations/stats.json
+__pycache__/
+*.pyc
+*.tmp
+*.bak
+*.log
+.arena-korean-backup/
+install-state.json
