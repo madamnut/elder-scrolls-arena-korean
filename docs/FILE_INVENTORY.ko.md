@@ -18,7 +18,7 @@
 | `translations/QUEST_KR.utf8.txt` | translation | 포함 | 선택 |
 | `docs/*.md` | source | 포함 | README 포함 |
 | `ARENAKR.COM` | generated | 제외 | payload |
-| `HANGUL.FNT` | generated/OFL | 제외 | payload + OFL |
+| `HANGUL9.FNT`, `HANGUL12.FNT`, `HANGUL16.FNT` | generated/OFL | 제외 | payload + 저작권·OFL·출처 고지 |
 | `QUEST_KR.TXT` | generated | 제외 | payload |
 | `ACDKR.EXE` | derived | 제외 | xdelta 결과 |
 | `GLOBAL_K.BSA` | derived | 제외 | xdelta 결과 |
@@ -55,8 +55,8 @@
 | 파일 | 소유·용도 |
 |---|---|
 | `FONT_*.DAT`, `ARENAFNT.DAT` 등 | 게임 원본, 배포 금지 |
-| Galmuri 원본 | 외부 OFL 폰트, 전체 reference는 Git 제외 |
-| `HANGUL.FNT` | Galmuri 기반 생성물, OFL 고지 필요 |
+| Galmuri·물마루·Neo둥근모·GNU Unifont 원본 | 외부 폰트, 전체 reference는 Git 제외 |
+| `HANGUL9.FNT`, `HANGUL12.FNT`, `HANGUL16.FNT` | 외부 폰트 기반 수정본, 폰트별 OFL 고지 필요 |
 
 ## 반드시 무시할 디렉터리
 
@@ -84,4 +84,3 @@ DOSBox-0.74/capture/
 ```
 
 정확한 세이브 목록을 모르는 상태에서 와일드카드 삭제를 사용하지 않는다.
-

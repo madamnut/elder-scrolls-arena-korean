@@ -52,7 +52,7 @@ Arena-Korean-Patch-v0.1.0.zip
 | `TITLE.IMG` | 한글 `TITLE.IMG` |
 | `SCROLL03.IMG` | 한글 `SCROLL03.IMG` |
 
-`ARENAKR.COM`, `QUEST_KR.TXT`처럼 직접 작성한 파일은 payload로 복사한다. `HANGUL.FNT`는 OFL 고지와 함께 배포한다.
+`ARENAKR.COM`, `QUEST_KR.TXT`처럼 직접 작성한 파일은 payload로 복사한다. `HANGUL9.FNT`, `HANGUL12.FNT`, `HANGUL16.FNT`처럼 외부 폰트를 변환한 파일은 원저작권 문구, OFL 전문과 출처·변환 기록을 함께 배포한다. 세부 구조는 [폰트 정책 문서](FONTS.ko.md)를 따른다.
 
 ## 버전 정책
 
@@ -76,7 +76,7 @@ Arena-Korean-Patch-v0.1.0.zip
 - [ ] 원본·결과 SHA-256 기록
 - [ ] 깨끗한 Steam 설치에서 설치 시험
 - [ ] 제거 뒤 원본 해시 복원 확인
-- [ ] 라이선스 전문 포함
+- [ ] 사용한 각 폰트의 원저작권 문구와 OFL 전문 포함
 - [ ] 번역 범위와 알려진 문제 작성
 - [ ] ZIP 내용물을 별도 폴더에서 재시험
 - [ ] 릴리스 태그와 변경 기록 작성
@@ -91,4 +91,3 @@ Arena-Korean-Patch-v0.1.0.zip
 6. 원본이 Git 기록에 들어간 적이 없는지 확인한 뒤 공개한다.
 
 한 번 커밋한 원본 파일은 현재 트리에서 삭제해도 Git 기록에 남는다. 실수했다면 공개 전에 기록을 정리하고 새 저장소로 다시 시작하는 편이 안전하다.
-

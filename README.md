@@ -80,6 +80,7 @@ S = Unicode 완성형 한글 인덱스 (가=0, 힣=11171)
 ## 문서
 
 - [아키텍처와 런타임 구조](docs/ARCHITECTURE.ko.md)
+- [한글 폰트 정책과 라이선스](docs/FONTS.ko.md)
 - [단일 CMD 설치기 사양](docs/INSTALLER.ko.md)
 - [개발 및 빌드 절차](docs/DEVELOPMENT.ko.md)
 - [번역·문체·자리표시자 규칙](docs/TRANSLATION.ko.md)
@@ -111,7 +112,7 @@ Git LFS는 원본 게임 파일을 공개해도 된다는 허가가 아니므로
 ## 라이선스
 
 - 프로젝트 코드의 공개 라이선스는 저장소 공개 전에 별도로 결정한다.
-- Galmuri 기반 글꼴 데이터는 SIL Open Font License 1.1 조건을 따른다.
+- 한글 글리프 뱅크는 기반 폰트의 SIL Open Font License 1.1 조건을 따르며, 자세한 의무는 [폰트 정책 문서](docs/FONTS.ko.md)에 기록한다.
 - xdelta3 실행 파일을 번들할 경우 GPL-2.0 조건과 고지를 따른다.
 - 게임 이름, 원본 코드, 그림, 음악, 음성 및 데이터의 권리는 각 권리자에게 있다.
 
