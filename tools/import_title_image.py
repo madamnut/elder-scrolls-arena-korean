@@ -9,10 +9,10 @@ from arena_img import decode as decode_img, encode_uncompressed, palette_8bit
 
 
 ROOT = Path(__file__).resolve().parents[2]
-INPUT = ROOT / "korean-patch" / "artist-handoff" / "해상도조정완료" / "TITLE-gpt-raw.png"
-ORIGINAL = ROOT / "korean-patch" / "backup" / "original-loose" / "TITLE.IMG"
-OUTPUT = ROOT / "korean-patch" / "build" / "title-final" / "TITLE.IMG"
-PREVIEW = ROOT / "korean-patch" / "analysis" / "title-final-indexed.png"
+INPUT = ROOT / "arena-korean-work" / "artist-handoff" / "해상도조정완료" / "TITLE-gpt-raw.png"
+ORIGINAL = ROOT / "arena-korean-work" / "backup" / "original-loose" / "TITLE.IMG"
+OUTPUT = ROOT / "arena-korean-work" / "build" / "title-final" / "TITLE.IMG"
+PREVIEW = ROOT / "arena-korean-work" / "analysis" / "title-final-indexed.png"
 
 
 def main() -> int:

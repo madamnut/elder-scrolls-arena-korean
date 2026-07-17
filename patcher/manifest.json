@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "patchVersion": "0.3.0",
+  "creator": "madamnut",
+  "repository": "https://github.com/madamnut/elder-scrolls-arena-korean",
+  "steamAppId": "1812290",
+  "supportedGame": "Steam Arena 1.07 CD-ROM",
+  "config": {
+    "path": "DOSBox-0.74/arena.conf",
+    "sourceSha256": "1906FF250B49117818644416C6CA343C5C00AB96B877481F99A602D09B8ADE6D"
+  },
+  "files": [
+    {
+      "mode": "delta",
+      "source": "ARENA/ACD.EXE",
+      "sourceSize": 174429,
+      "sourceSha256": "40DFED48A66154FEEDA2DC33B9549570B4392874750101F264E7DE25ECE98A7D",
+      "patch": "patcher/patches/acd.akdelta.zip",
+      "patchSha256": "74B6D1F45E06070C80B1AA77648872702E5AEF19DFCDF579D270ED400C77ADB7",
+      "target": "ARENA_KR/ACDKR.EXE",
+      "targetSize": 323130,
+      "targetSha256": "D50E8E66AFB5BD7FFB35D1D206AC2E4A79E04AF022FBD72DD86B3499DC781768"
+    },
+    {
+      "mode": "delta",
+      "source": "ARENA/GLOBAL.BSA",
+      "sourceSize": 16802136,
+      "sourceSha256": "345385C1565D9CA73E2D59D71A422498135485E2D01D4DF66355ED804209042D",
+      "patch": "patcher/patches/global.akdelta.zip",
+      "patchSha256": "72569968F9E08F1CD485A64E113BA605BE7D5AFFCE41637A99BD1BB5BF3FC77C",
+      "target": "ARENA_KR/GLOBAL_K.BSA",
+      "targetSize": 17476223,
+      "targetSha256": "98595F429C8F4E415C9F9A8996352249E1B9D913F306D92CB2CA37075A2379F7"
+    },
+    {
+      "mode": "delta",
+      "source": "ARENA/INTRO.FLC",
+      "sourceSize": 1589192,
+      "sourceSha256": "9524A6B1EAB39109C36A25036EFBABEBBD600056DE58C5F11A7B6B07E80879F2",
+      "patch": "patcher/patches/intro.akdelta.zip",
+      "patchSha256": "E9B12D2D6B40878E1FC3C2E09DF592880F3A36EC8E34248FC29D8CA512716B62",
+      "target": "ARENA_KR/INTKR.FLC",
+      "targetSize": 4930600,
+      "targetSha256": "BAA190F3C2335252ADB42322180605D10A7A20B350DD86BD962B7AF86E287D7B"
+    },
+    {
+      "mode": "delta",
+      "source": "ARENA/TEMPLATE.DAT",
+      "sourceSize": 395981,
+      "sourceSha256": "DAE070EDF25B137DAA2D023C8335D2E276AA6A8BD1F64EF05011CE7CC1254BD7",
+      "patch": "patcher/patches/template.akdelta.zip",
+      "patchSha256": "A0B7B7BF4AE5D7CE5FC05B97B09EDCC1F21A09D818DD641FFE1E6D25BF78A242",
+      "target": "ARENA_KR/TEMPL_KR.DAT",
+      "targetSize": 395981,
+      "targetSha256": "82C3348DF9CA9EC78189C5CE50216A204B5C7E8DBAC4EB973CF9266D3F35F2C0"
+    },
+    {
+      "mode": "delta",
+      "source": "ARENA/TITLE.IMG",
+      "sourceSize": 21211,
+      "sourceSha256": "1058D2A9FD6E9202C3DD2F9526A7A282ED4E78B40E001F207424BF6BF7E50F25",
+      "patch": "patcher/patches/title.akdelta.zip",
+      "patchSha256": "73560E341337302357BED93E084DFFF36F03C52385F0CDC06BA6D84C3E140983",
+      "target": "ARENA_KR/TITLE.IMG",
+      "targetSize": 64780,
+      "targetSha256": "E3C74EC5812284580668DD043613A3F088CADED83EDEC12269D42EE7DAA33BAA"
+    },
+    {
+      "mode": "delta",
+      "source": "ARENA/SCROLL03.IMG",
+      "sourceSize": 20163,
+      "sourceSha256": "885D6971C711034B333BE695F60E834C49F644CD06AA15D950837D36FA014D3D",
+      "patch": "patcher/patches/scroll03.akdelta.zip",
+      "patchSha256": "5B7D917AFD318751D5628BE05FFEFE91A6227D6FD43A93B5CE95D8AEEE1BC605",
+      "target": "ARENA_KR/SCROLL03.IMG",
+      "targetSize": 64780,
+      "targetSha256": "3CCD31D4B710237A8F6609EF252A3AF123515CE41B6A7CB8ABD03ACDC98E6C38"
+    },
+    {
+      "mode": "delta",
+      "source": "ARENA/TAMRIEL.MNU",
+      "sourceSize": 41329,
+      "sourceSha256": "0475FFEAC70B75F151A36AA57CC07ECB4FE96A4617BE3DC484E3413F2BA0A981",
+      "patch": "patcher/patches/tamriel.akdelta.zip",
+      "patchSha256": "C1DD0207C25F01D5E6E30FACAB3AB6651F930A8204B4E00709A136DA47187206",
+      "target": "ARENA_KR/TAMRIEL.MNU",
+      "targetSize": 41329,
+      "targetSha256": "E2941A049BB2564594361F4CC4C3CB8640F55789F0205D4F902A80AC4A5BC26C"
+    },
+    {
+      "mode": "delta",
+      "source": "ARENA/VISION.FLC",
+      "sourceSize": 332824,
+      "sourceSha256": "D93EB4D95EB824A88CB5B7C9F757E445CE0B89E30D9465A8A9E91CFBC89EC8DD",
+      "patch": "patcher/patches/vision.akdelta.zip",
+      "patchSha256": "97F9AD42F91B4883F0B196CD31EA9C4786920E7B5C6AED4EA91B4E49BC3CFFD6",
+      "target": "ARENA_KR/VISION.FLC",
+      "targetSize": 1345368,
+      "targetSha256": "F7536896E823C289C2202BFD90360AE731C96FF00081D7D744845E73D9D9E3CE"
+    },
+    {
+      "mode": "delta",
+      "source": "ARENA/CHAOSVSN.FLC",
+      "sourceSize": 108700,
+      "sourceSha256": "932637278CE5C196CF5ECA4F593DFE7B71A3E160FD9630AE1BBF67B5C3AD9331",
+      "patch": "patcher/patches/chaosvsn.akdelta.zip",
+      "patchSha256": "280C5139CC0FA7A1C7D9505655949AEDC17B2E341D2E88FC3207A27A490D2EF1",
+      "target": "ARENA_KR/CHAOSVSN.FLC",
+      "targetSize": 2049610,
+      "targetSha256": "4D14881E730681479C80980E4F3201EB73C2E7E6390D0BDC5E270B54D6DD6668"
+    },
+    {
+      "mode": "copy",
+      "payload": "patcher/payload/ARENAKR.COM",
+      "target": "ARENA_KR/ARENAKR.COM",
+      "targetSize": 5595,
+      "targetSha256": "21EE4BBC61AA93A335268538856E60857AB3F080AED5456C23FBFEF60D9B3F39"
+    },
+    {
+      "mode": "copy",
+      "payload": "patcher/payload/HANGUL.FNT",
+      "target": "ARENA_KR/HANGUL.FNT",
+      "targetSize": 357504,
+      "targetSha256": "BA88F9EADB4BF76A3FC7D68BD07EE2B4609E61B6BD5283C01320DC479F00ADF6"
+    },
+    {
+      "mode": "copy",
+      "payload": "patcher/payload/HANGUL12.FNT",
+      "target": "ARENA_KR/HANGUL12.FNT",
+      "targetSize": 357504,
+      "targetSha256": "5FBCD2D00849C06FAED2E34D5A995B9062C9FCA35E7357864C2C163F446177E2"
+    },
+    {
+      "mode": "copy",
+      "payload": "patcher/payload/HANGUL16.FNT",
+      "target": "ARENA_KR/HANGUL16.FNT",
+      "targetSize": 357504,
+      "targetSha256": "756D980E08F0541567B760973922CF3F5D6371EF7B472833D0452C46AB28296C"
+    },
+    {
+      "mode": "copy",
+      "payload": "patcher/payload/QUEST_KR.TXT",
+      "target": "ARENA_KR/QUEST_KR.TXT",
+      "targetSize": 11623,
+      "targetSha256": "4C904E46CB13DE07F322385D19997A59B9885F430DD29A85B5C2BF30BF12C56E"
+    }
+  ]
+}

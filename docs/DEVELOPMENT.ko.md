@@ -15,23 +15,30 @@
 ## 디렉터리 역할
 
 ```text
-korean-patch/
-├─ tools/          직접 작성한 포맷·빌드 도구
-├─ tsr/            DOS 한글 렌더러 소스
-├─ translations/   UTF-8 번역 원본
-├─ docs/           프로젝트 문서
-├─ analysis/       추출·미리보기·진단 결과, Git 제외
-├─ build/          생성 결과, Git 제외
-├─ backup/         개발 중 수동 백업, Git 제외
-├─ reference/      외부 도구·참조 저장소, Git 제외
-└─ artist-handoff/ 원본 포함 이미지 작업물, Git 제외
+elder-scrolls-arena-korean/  공개 Git 저장소
+├─ tools/                    포맷·빌드 도구
+├─ tsr/                      DOS 한글 렌더러 소스
+├─ translations/             배포 가능한 UTF-8 번역 원본
+└─ docs/                     프로젝트 문서
+
+arena-korean-work/           로컬 전용 작업 자료
+├─ analysis/                 추출·미리보기·진단 결과
+├─ build/                    현재 생성 결과
+├─ backup/                   개발 중 수동 백업
+├─ reference/                외부 도구·참조 저장소
+├─ handoff/                  이미지 작업 전달 자료
+├─ artist-handoff/           기존 이미지 작업 전달 자료
+├─ translations-private/     원문 포함 비공개 카탈로그
+└─ archive/                  과거 시험 산출물과 이전 구조
 ```
+
+공개 저장소를 소스와 문서의 유일한 기준으로 삼는다. `arena-korean-work`에는 Git 저장소에 올릴 수 없는 원본 파생 자료와 재생성 가능한 결과만 둔다. 전체 역할은 [디렉터리 구조 문서](DIRECTORY_LAYOUT.ko.md)를 따른다.
 
 ## 원본 검증
 
 ```powershell
 Get-FileHash -Algorithm SHA256 .\ARENA\ACD.EXE
-python .\korean-patch\tools\arena_bsa.py verify .\ARENA\GLOBAL.BSA
+python .\elder-scrolls-arena-korean\tools\arena_bsa.py verify .\ARENA\GLOBAL.BSA
 ```
 
 원본이 예상 해시와 다르면 분석·패치를 계속하지 않는다.
@@ -39,8 +46,8 @@ python .\korean-patch\tools\arena_bsa.py verify .\ARENA\GLOBAL.BSA
 ## AKC 검사
 
 ```powershell
-python .\korean-patch\tools\akc_codec.py self-test
-python .\korean-patch\tools\akc_codec.py encode "엘더 스크롤" --hex
+python .\elder-scrolls-arena-korean\tools\akc_codec.py self-test
+python .\elder-scrolls-arena-korean\tools\akc_codec.py encode "엘더 스크롤" --hex
 ```
 
 번역 원본에 AKC가 지원하지 않는 문자가 있으면 빌드가 실패해야 정상이다.
@@ -48,16 +55,16 @@ python .\korean-patch\tools\akc_codec.py encode "엘더 스크롤" --hex
 ## 한글 글꼴 빌드
 
 ```powershell
-python .\korean-patch\tools\build_hangul_font.py `
-  .\korean-patch\reference\galmuri\dist\Galmuri9.bdf `
-  .\korean-patch\build\HANGUL.FNT `
-  --preview .\korean-patch\analysis\HANGUL-preview.png
+python .\elder-scrolls-arena-korean\tools\build_hangul_font.py `
+  .\arena-korean-work\reference\galmuri\dist\Galmuri9.bdf `
+  .\arena-korean-work\build\HANGUL.FNT `
+  --preview .\arena-korean-work\analysis\HANGUL-preview.png
 
-python .\korean-patch\tools\build_hangul_banks.py `
-  --mulmaru-pfp .\korean-patch\reference\font-candidates\mulmaru\release\MulmaruMono.pfp `
-  --neodgm-ttf .\korean-patch\reference\font-candidates\neodgm\release\neodgm.ttf `
-  --output-dir .\korean-patch\build `
-  --metadata-dir .\korean-patch\build\font-metadata
+python .\elder-scrolls-arena-korean\tools\build_hangul_banks.py `
+  --mulmaru-pfp .\arena-korean-work\reference\font-candidates\mulmaru\release\MulmaruMono.pfp `
+  --neodgm-ttf .\arena-korean-work\reference\font-candidates\neodgm\release\neodgm.ttf `
+  --output-dir .\arena-korean-work\build `
+  --metadata-dir .\arena-korean-work\build\font-metadata
 ```
 
 출력 글꼴의 크기와 글리프 수를 빌드 로그에 기록한다. 세 파일은 각각 357,504바이트여야 한다.
@@ -69,17 +76,17 @@ python .\korean-patch\tools\build_hangul_banks.py `
 ## TSR 빌드
 
 ```powershell
-python .\korean-patch\tools\build_vision_h9_cache.py `
-  .\korean-patch\translations\opening-overrides.json `
-  .\korean-patch\build\HANGUL.FNT `
-  .\korean-patch\tsr\vision_h9_cache.inc `
+python .\elder-scrolls-arena-korean\tools\build_vision_h9_cache.py `
+  .\elder-scrolls-arena-korean\translations\opening-overrides.json `
+  .\arena-korean-work\build\HANGUL.FNT `
+  .\elder-scrolls-arena-korean\tsr\vision_h9_cache.inc `
   --template-key 1400
 
 nasm -f bin `
-  .\korean-patch\tsr\arena_kr.asm `
-  -I .\korean-patch\tsr\ `
-  -o .\korean-patch\build\ARENAKR.COM `
-  -l .\korean-patch\analysis\arena_kr.lst
+  .\elder-scrolls-arena-korean\tsr\arena_kr.asm `
+  -I .\elder-scrolls-arena-korean\tsr\ `
+  -o .\arena-korean-work\build\ARENAKR.COM `
+  -l .\arena-korean-work\analysis\arena_kr.lst
 ```
 
 FLC 재생 중에는 Arena가 EMS 프레임을 사용하므로 컷신 자막 음절을 먼저 상주 캐시로 만든다. `--template-key`는 반드시 지정하며 한 장면 묶음에 실제로 재생되는 키만 반복해서 넣는다. 캐릭터 생성·혈통처럼 컷신과 무관한 번역까지 캐시에 넣으면 상주 메모리가 불필요하게 커진다. 컷신 번역이 바뀌면 `vision_h9_cache.inc`와 `ARENAKR.COM`도 반드시 다시 빌드한다. 렌더러를 수정할 때는 이전 바이너리와 바이트 차이를 확인하고 예상한 함수만 바뀌었는지 검토한다.
@@ -91,45 +98,45 @@ FLC 재생 중에는 Arena가 EMS 프레임을 사용하므로 컷신 자막 음
 대사를 수정한 뒤 장면별 대사 문서를 다시 만든다.
 
 ```powershell
-python .\korean-patch\tools\build_cutscene_dialogue_doc.py `
-  --catalog .\korean-patch\translations\catalog.jsonl `
-  --stable .\korean-patch\translations\opening-overrides.json `
-  --staging .\korean-patch\translations\cutscene-staging-overrides.json `
-  --active .\korean-patch\translations\cutscene-active-test.json `
-  --output .\korean-patch\docs\CUTSCENE_DIALOGUE.ko.md
+python .\elder-scrolls-arena-korean\tools\build_cutscene_dialogue_doc.py `
+  --catalog .\arena-korean-work\translations-private\catalog.jsonl `
+  --stable .\elder-scrolls-arena-korean\translations\opening-overrides.json `
+  --staging .\elder-scrolls-arena-korean\translations\cutscene-staging-overrides.json `
+  --active .\elder-scrolls-arena-korean\translations\cutscene-active-test.json `
+  --output .\elder-scrolls-arena-korean\docs\CUTSCENE_DIALOGUE.ko.md
 ```
 
 ```powershell
-python .\korean-patch\tools\merge_overrides.py `
-  .\korean-patch\translations\opening-overrides.json `
-  .\korean-patch\translations\cutscene-staging-overrides.json `
+python .\elder-scrolls-arena-korean\tools\merge_overrides.py `
+  .\elder-scrolls-arena-korean\translations\opening-overrides.json `
+  .\elder-scrolls-arena-korean\translations\cutscene-staging-overrides.json `
   --staged-template-key 1402 `
-  --output .\korean-patch\build\cutscene-test-overrides.json
+  --output .\arena-korean-work\build\cutscene-test-overrides.json
 ```
 
 `--staged-template-key`는 한 번에 하나씩 추가하며, 앞 장면이 통과하기 전에는 다음 키를 넣지 않는다. 옵션을 생략하면 시험 파일 전체가 병합되므로 실제 배치용 명령에서는 생략하지 않는다. 안정 빌드는 아래 명령처럼 `opening-overrides.json`만 사용한다. 시험 빌드는 `--overrides`와 글리프 캐시 입력을 모두 `cutscene-test-overrides.json`으로 바꾸되, 캐시 생성에는 현재 묶음의 `--template-key 1400 --template-key 1402`처럼 실제 컷신 키만 지정한다. 어느 한쪽만 바꾸면 한글 자막과 상주 글리프 집합이 어긋난다.
 
 ```powershell
-python .\korean-patch\tools\apply_catalog.py `
+python .\elder-scrolls-arena-korean\tools\apply_catalog.py `
   --arena .\ARENA `
-  --catalog .\korean-patch\translations\catalog.jsonl `
-  --overrides .\korean-patch\translations\opening-overrides.json `
-  --output .\korean-patch\build\opening-data `
-  --bsa-output .\korean-patch\build\GLOBAL_K-opening-base.BSA
+  --catalog .\arena-korean-work\translations-private\catalog.jsonl `
+  --overrides .\elder-scrolls-arena-korean\translations\opening-overrides.json `
+  --output .\arena-korean-work\build\opening-data `
+  --bsa-output .\arena-korean-work\build\GLOBAL_K-opening-base.BSA
 
-python .\korean-patch\tools\localize_vision_band.py `
+python .\elder-scrolls-arena-korean\tools\localize_vision_band.py `
   .\ARENA\VISION.FLC `
-  .\korean-patch\build\VISION.FLC `
+  .\arena-korean-work\build\VISION.FLC `
   --expected-frames 20
 
-python .\korean-patch\tools\localize_vision_band.py `
+python .\elder-scrolls-arena-korean\tools\localize_vision_band.py `
   .\ARENA\CHAOSVSN.FLC `
-  .\korean-patch\build\CHAOSVSN.FLC `
+  .\arena-korean-work\build\CHAOSVSN.FLC `
   --expected-frames 31
 
-python .\korean-patch\tools\localize_vision_band.py `
+python .\elder-scrolls-arena-korean\tools\localize_vision_band.py `
   .\ARENA\JAGAR.FLC `
-  .\korean-patch\build\JAGAR.FLC `
+  .\arena-korean-work\build\JAGAR.FLC `
   --expected-frames 28
 ```
 
@@ -138,7 +145,7 @@ python .\korean-patch\tools\localize_vision_band.py `
 ## 질문 파일 빌드
 
 ```powershell
-python .\korean-patch\tools\build_questions.py
+python .\elder-scrolls-arena-korean\tools\build_questions.py
 ```
 
 필수 검증:
@@ -160,9 +167,9 @@ python .\korean-patch\tools\build_questions.py
 입력은 항상 검증된 언팩 원본이다.
 
 ```powershell
-python .\korean-patch\tools\patch_acd.py `
-  .\korean-patch\analysis\unpacked\output.000.exe `
-  .\korean-patch\build\ACDKR.EXE `
+python .\elder-scrolls-arena-korean\tools\patch_acd.py `
+  .\arena-korean-work\analysis\unpacked\output.000.exe `
+  .\arena-korean-work\build\ACDKR.EXE `
   --proof-menu `
   --bsa-name GLOBAL_K.BSA `
   --intro-name INTKR.FLC `
@@ -177,11 +184,11 @@ python .\korean-patch\tools\patch_acd.py `
 ## BSA 작업
 
 ```powershell
-python .\korean-patch\tools\arena_bsa.py list .\ARENA\GLOBAL.BSA
-python .\korean-patch\tools\arena_bsa.py verify .\ARENA\GLOBAL.BSA
-python .\korean-patch\tools\arena_bsa.py rebuild `
+python .\elder-scrolls-arena-korean\tools\arena_bsa.py list .\ARENA\GLOBAL.BSA
+python .\elder-scrolls-arena-korean\tools\arena_bsa.py verify .\ARENA\GLOBAL.BSA
+python .\elder-scrolls-arena-korean\tools\arena_bsa.py rebuild `
   .\ARENA\GLOBAL.BSA `
-  .\korean-patch\build\artist-final `
+  .\arena-korean-work\build\artist-final `
   .\ARENA_KR\GLOBAL_K.BSA
 ```
 
@@ -192,26 +199,26 @@ python .\korean-patch\tools\arena_bsa.py rebuild `
 `poc-overrides.json`에서 시작 던전 `START.INF`의 AKC 평문을 만든다.
 
 ```powershell
-python .\korean-patch\tools\apply_catalog.py `
+python .\elder-scrolls-arena-korean\tools\apply_catalog.py `
   --arena .\ARENA `
-  --catalog .\korean-patch\translations\catalog.jsonl `
-  --overrides .\korean-patch\translations\poc-overrides.json `
-  --output .\korean-patch\build\first-dungeon-data `
-  --bsa-output .\korean-patch\build\GLOBAL_K-first-dungeon-base.BSA
+  --catalog .\arena-korean-work\translations-private\catalog.jsonl `
+  --overrides .\elder-scrolls-arena-korean\translations\poc-overrides.json `
+  --output .\arena-korean-work\build\first-dungeon-data `
+  --bsa-output .\arena-korean-work\build\GLOBAL_K-first-dungeon-base.BSA
 ```
 
 자동지도와 일지의 고정 문구는 원본 BSA 추출물과 한글 글리프 뱅크에서 만든다.
 
 ```powershell
-python .\korean-patch\tools\localize_ingame_ui.py `
-  .\korean-patch\analysis\bsa-decoded `
-  .\korean-patch\build\ingame-ui-replacements `
-  --font9 .\korean-patch\build\HANGUL.FNT `
-  --font16 .\korean-patch\build\HANGUL16.FNT `
+python .\elder-scrolls-arena-korean\tools\localize_ingame_ui.py `
+  .\arena-korean-work\analysis\bsa-decoded `
+  .\arena-korean-work\build\ingame-ui-replacements `
+  --font9 .\arena-korean-work\build\HANGUL.FNT `
+  --font16 .\arena-korean-work\build\HANGUL16.FNT `
   --charsht-col .\ARENA\CHARSHT.COL `
-  --preview-dir .\korean-patch\analysis\ingame-ui-localized `
-  --automap-workpack-dir .\korean-patch\handoff\embedded-text\AUTOMAP `
-  --equip-workpack-dir .\korean-patch\handoff\embedded-text\EQUIP
+  --preview-dir .\arena-korean-work\analysis\ingame-ui-localized `
+  --automap-workpack-dir .\arena-korean-work\handoff\embedded-text\AUTOMAP `
+  --equip-workpack-dir .\arena-korean-work\handoff\embedded-text\EQUIP
 ```
 
 ### 이미지 고정 글자 작업 인계
@@ -223,22 +230,22 @@ python .\korean-patch\tools\localize_ingame_ui.py `
 자동지도 작업자는 `handoff/embedded-text/AUTOMAP/02_AUTOMAP-clean.png`를 바탕으로 작업하고, `words/` 또는 실제 크기 `04_AUTOMAP-text-atlas-actual-size.png`를 사용해 `완성본-넣는곳/AUTOMAP-final.png`에 320×200 완성본을 둔다. 이미지 고정 글자는 `N/E/S/W`, `Exit`뿐이며 상단 장소명·지도 선·플레이어 표시는 동적 출력이므로 완성본에 넣지 않는다. 정확한 좌표와 팔레트 번호는 `04_AUTOMAP-text-atlas.json`과 작업 묶음의 `README.ko.md`에 기록한다.
 
 ```powershell
-python .\korean-patch\tools\import_automap_image.py `
-  --png .\korean-patch\handoff\embedded-text\AUTOMAP\완성본-넣는곳\AUTOMAP-final.png `
-  --source .\korean-patch\analysis\bsa-decoded\AUTOMAP.IMG `
-  --output .\korean-patch\build\automap-artist-final\AUTOMAP.IMG `
-  --preview .\korean-patch\build\automap-artist-final\AUTOMAP-preview-320x200.png
+python .\elder-scrolls-arena-korean\tools\import_automap_image.py `
+  --png .\arena-korean-work\handoff\embedded-text\AUTOMAP\완성본-넣는곳\AUTOMAP-final.png `
+  --source .\arena-korean-work\analysis\bsa-decoded\AUTOMAP.IMG `
+  --output .\arena-korean-work\build\automap-artist-final\AUTOMAP.IMG `
+  --preview .\arena-korean-work\build\automap-artist-final\AUTOMAP-preview-320x200.png
 ```
 
 가져오기 도구는 320×200 완전 불투명 이미지, 원본 내장 팔레트 색상만 허용한다. 깨끗한 바탕과의 차이는 나침반 `(240,18)–(306,77)`과 종료 `(238,156)–(304,182)` 영역 안에만 있어야 하며, 나침반 팔레트 10번과 종료 팔레트 6번 글자색이 모두 존재해야 한다.
 
 ```powershell
-python .\korean-patch\tools\import_equip_image.py `
-  --png .\korean-patch\handoff\embedded-text\EQUIP\완성본-넣는곳\EQUIP-final.png `
-  --source .\korean-patch\analysis\bsa-decoded\EQUIP.IMG `
+python .\elder-scrolls-arena-korean\tools\import_equip_image.py `
+  --png .\arena-korean-work\handoff\embedded-text\EQUIP\완성본-넣는곳\EQUIP-final.png `
+  --source .\arena-korean-work\analysis\bsa-decoded\EQUIP.IMG `
   --palette .\ARENA\CHARSHT.COL `
-  --output .\korean-patch\build\equip-artist-final\EQUIP.IMG `
-  --preview .\korean-patch\build\equip-artist-final\EQUIP-preview-171x200.png
+  --output .\arena-korean-work\build\equip-artist-final\EQUIP.IMG `
+  --preview .\arena-korean-work\build\equip-artist-final\EQUIP-preview-171x200.png
 ```
 
 가져오기 도구는 171×200·불투명 이미지만 허용하고, 깨끗한 바탕과 달라진 픽셀이 팔레트 253번 금색 또는 31번 짙은 갈색인지 검사한다. 현재 확정 배치는 `레벨:` `(105,22)`, `장비` `(74,39)`, `종료` `(14,190)`, `마법서` `(71,190)`, `버리기` `(133,190)`이다.
@@ -246,16 +253,16 @@ python .\korean-patch\tools\import_equip_image.py `
 최종 BSA는 반드시 현재 한글 BSA를 입력으로 삼아 두 단계로 합친다. 원본 `GLOBAL.BSA`에서 다시 시작하면 이전 이미지 교체가 사라진다.
 
 ```powershell
-python .\korean-patch\tools\arena_bsa.py rebuild `
+python .\elder-scrolls-arena-korean\tools\arena_bsa.py rebuild `
   .\ARENA_KR\GLOBAL_K.BSA `
-  .\korean-patch\build\first-dungeon-data\inf-plain `
-  .\korean-patch\build\GLOBAL_K-text.BSA `
+  .\arena-korean-work\build\first-dungeon-data\inf-plain `
+  .\arena-korean-work\build\GLOBAL_K-text.BSA `
   --encode-inf
 
-python .\korean-patch\tools\arena_bsa.py rebuild `
-  .\korean-patch\build\GLOBAL_K-text.BSA `
-  .\korean-patch\build\ingame-ui-replacements `
-  .\korean-patch\build\GLOBAL_K-ingame.BSA
+python .\elder-scrolls-arena-korean\tools\arena_bsa.py rebuild `
+  .\arena-korean-work\build\GLOBAL_K-text.BSA `
+  .\arena-korean-work\build\ingame-ui-replacements `
+  .\arena-korean-work\build\GLOBAL_K-ingame.BSA
 ```
 
 새 단계를 처음 적용하는 기준 BSA와 최종 결과를 항목별로 비교했을 때 `START.INF`, `AUTOMAP.IMG`, `LOGBOOK.IMG`, `EQUIP.IMG`만 달라야 한다. 이미 앞의 세 파일이 적용된 현재 개발 BSA를 기준으로 다시 만들면 `EQUIP.IMG` 하나만 달라야 한다. 공통 실행 파일 문구 125개와 런타임 이름 표 10개는 별도 명령이 아니라 `patch_acd.py`의 기본 검증 패치에 포함된다.
@@ -265,8 +272,8 @@ python .\korean-patch\tools\arena_bsa.py rebuild `
 사용자가 조정한 최종 PNG는 320×200이어야 한다.
 
 ```powershell
-python .\korean-patch\tools\import_artist_images.py
-python .\korean-patch\tools\import_title_image.py
+python .\elder-scrolls-arena-korean\tools\import_artist_images.py
+python .\elder-scrolls-arena-korean\tools\import_title_image.py
 ```
 
 이미지는 원본 Arena 팔레트에 디더링 없이 양자화한다. 결과는 인덱스 PNG로 미리 확인한 뒤 IMG로 적용한다.
@@ -275,10 +282,12 @@ python .\korean-patch\tools\import_title_image.py
 
 메인 메뉴 한 장만 다시 가져올 때는 `tools/import_menu_image.py`를 사용한다. 완성 PNG는 320×200이어야 하며 원본 `MENU.IMG`의 내장 팔레트에 디더링 없이 양자화한다. `SCROLL.FLC` 팔레트로 픽셀 인덱스를 만든 뒤 원본 메뉴 팔레트를 붙이면 게임에서 색이 뒤틀리므로, 출력 IMG의 픽셀 인덱스와 내장 팔레트는 반드시 같은 원본 메뉴 팔레트를 기준으로 한다. 조선100년체 폰트 파일은 패치에 포함하지 않고, 폰트로 만든 최종 비트맵 결과만 `MENU.IMG`로 배포한다.
 
+ESC 설정 메뉴는 `GLOBAL.BSA/OP.IMG` 한 장이며 완성 PNG 크기는 320×147이다. `OP.IMG`에는 팔레트가 없으므로 `tools/import_esc_menu_image.py`로 `ARENA/PAL.COL`에 무디더링 양자화하고 원본 좌표 `(0,0)`과 IMG 헤더를 보존한다. 현재 개발 BSA에 적용할 때는 기존 `GLOBAL_K.BSA`를 입력으로 삼아 `OP.IMG`만 든 별도 교체 폴더로 재구성한다. 적용 전후 항목 비교에서 `OP.IMG` 하나만 달라야 한다.
+
 ## 개발판 설치 원칙
 
-1. 현재 정상 파일을 `backup/`에 보존한다.
-2. `build/`에서 먼저 생성·검증한다.
+1. 현재 정상 파일을 `arena-korean-work/backup/`에 보존한다.
+2. `arena-korean-work/build/`에서 먼저 생성·검증한다.
 3. 해시가 일치하는 결과만 한글 전용 런타임 `ARENA_KR/`에 복사한다.
 4. DOSBox를 완전히 종료하고 다시 실행한다.
 5. 사용자가 확인한 화면 단위로 다음 작업을 진행한다.

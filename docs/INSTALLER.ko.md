@@ -1,162 +1,107 @@
-# 단일 CMD 설치기 사양
+# 설치기 구현과 사용법
 
-## 사용자 경험
+## 목표
 
-배포 ZIP의 루트에서 `ArenaKoreanPatch.cmd` 하나만 더블클릭한다. CMD는 내부 `patcher/patcher.ps1`을 호출하고 모든 기능을 텍스트 메뉴로 제공한다.
+사용자는 GitHub 저장소의 `Download ZIP` 또는 GitHub Releases에서 ZIP을 내려받아 완전히 압축 해제한 뒤 최상단의 `Installer.bat`을 더블클릭한다. 설치가 끝나면 별도의 실행 파일을 찾을 필요 없이 Steam의 기존 전체 화면·창 모드 실행 항목을 그대로 사용한다.
 
 ```text
 ==================================================
- 엘더스크롤 아레나 한글 패치 v0.1.0
- 제작: MOMENLIT
+ 엘더스크롤 아레나 한글 패치 v0.3.0
+ 제작: madamnut
+ GitHub: https://github.com/madamnut/elder-scrolls-arena-korean
 ==================================================
 
-게임 경로 : C:\...\The Elder Scrolls Arena
-게임 버전 : Steam Arena 1.07 CD
-패치 상태 : 설치되지 않음
-
-[1] 한글 패치 설치 또는 업데이트
-[2] 설치 상태 검사
-[3] 원본으로 복구
-[4] 한글판 실행
+[1] 한글 패치 설치 또는 현재 패키지로 업데이트
+[2] 최신 버전 확인 및 자동 업데이트
+[3] 설치 상태 검사
+[4] 원본 실행 설정 복구
 [0] 종료
-
-실행할 작업의 번호를 입력하십시오:
->
 ```
 
-## CMD 책임
-
-CMD는 UTF-8 콘솔을 설정하고 PowerShell만 실행한다. 패치 로직을 배치 문법으로 구현하지 않는다.
-
-```bat
-@echo off
-chcp 65001 >nul
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0patcher\patcher.ps1"
-```
-
-## 설치 전 검사
-
-1. 패처 파일의 존재와 자체 버전을 확인한다.
-2. Steam 기본 경로와 알려진 라이브러리를 탐색한다.
-3. 찾지 못하면 Arena 루트 경로를 입력받는다.
-4. `ARENA/ACD.EXE`와 `ARENA/GLOBAL.BSA` 존재를 확인한다.
-5. DOSBox와 Arena 프로세스가 실행 중이면 종료를 요청한다.
-6. 대상 폴더의 쓰기 권한을 시험한다.
-7. 필요할 때만 관리자 권한으로 다시 실행한다.
-8. 매니페스트의 원본 SHA-256과 실제 파일을 비교한다.
-9. 알 수 없는 버전이면 변경 없이 중단한다.
-
-## 설치 트랜잭션
-
-각 파일은 다음 순서를 따른다.
+진행 중에는 다음 형식으로 현재 단계를 표시한다.
 
 ```text
-원본 검사
-  → 임시 출력 생성
-  → 출력 SHA-256 검사
-  → 교체 대상 백업
-  → 최종 경로로 원자적 이동
+[##########----------]  50%  적용 중: ARENA_KR/GLOBAL_K.BSA
 ```
 
-어느 단계든 실패하면 이번 실행에서 변경한 항목을 역순으로 되돌린다.
+## 구성
 
-## 파일 처리 정책
-
-### 한글 전용 런타임 생성
-
-설치기는 검증된 원본 `ARENA`를 같은 게임 루트의 `ARENA_KR`로 복제한다. 이후 모든 델타 결과와 한글 파일은 `ARENA_KR`에만 적용한다. 원본 `ARENA`에는 파일을 추가하거나 교체하지 않는다.
-
-### 원본에서 파생해 추가
-
-| 원본 | 설치 결과 |
-|---|---|
-| `ACD.EXE` | `ACDKR.EXE` |
-| `GLOBAL.BSA` | `GLOBAL_K.BSA` |
-| `INTRO.FLC` | `INTKR.FLC` |
-| `TEMPLATE.DAT` | `TEMPL_KR.DAT` |
-
-### 자체 파일 복사
+`Installer.bat`은 UTF-8 콘솔을 설정하고 `patcher/patcher.ps1`을 호출하는 진입점이다. 경로 탐색, 파일 검증, 델타 적용, 백업, 복구 및 업데이트 로직은 PowerShell에 있다.
 
 ```text
-ARENAKR.COM
-HANGUL.FNT
-HANGUL12.FNT
-HANGUL16.FNT
-QUEST_KR.TXT
-Arena Korean Test (Windowed).bat
-arena-korean-test.conf
+Installer.bat
+README.txt
+patcher/
+├─ patcher.ps1
+├─ manifest.json
+├─ patches/*.akdelta.zip
+├─ payload/
+└─ licenses/
 ```
 
-### `ARENA_KR`에서 같은 이름으로 교체
+## Steam 설치 경로 탐색
+
+1. Windows 레지스트리에서 Steam 설치 경로를 찾는다.
+2. `steamapps/libraryfolders.vdf`에 등록된 모든 라이브러리를 읽는다.
+3. Arena의 Steam App ID `1812290`에 해당하는 `appmanifest_1812290.acf`를 찾는다.
+4. 매니페스트의 `installdir`를 읽고 실제 게임 루트를 검증한다.
+5. 자동 탐색에 실패하면 사용자에게 Arena 설치 폴더 전체 경로를 입력받는다.
+
+다음 파일이 있어야 유효한 게임 루트로 인정한다.
 
 ```text
-TITLE.IMG
-SCROLL03.IMG
-TAMRIEL.MNU
+ARENA/ACD.EXE
+ARENA/GLOBAL.BSA
+DOSBox-0.74/arena.conf
+Arena (Full Screen).bat
+Arena (Windowed).bat
 ```
 
-이 파일들의 원본은 `ARENA`에 그대로 남으므로 별도 복원용 백업을 만들지 않는다.
+## 설치 처리
 
-## 설치 상태 파일
+1. DOSBox가 실행 중인지 검사한다.
+2. 원본, 델타와 payload의 SHA-256을 모두 확인한다.
+3. `ARENA_KR`이 없으면 원본 `ARENA`를 복제한다.
+4. 자체 델타 형식 `arena-korean-delta-v1`으로 한글 파일을 생성한다.
+5. 직접 작성하거나 재배포가 허용된 파일을 payload에서 복사한다.
+6. 설치 결과 파일의 SHA-256을 다시 확인한다.
+7. 원본 `DOSBox-0.74/arena.conf`를 백업한다.
+8. `[autoexec]` 구역만 `ARENA_KR`, `ARENAKR.COM`, `ACDKR.EXE`를 사용하도록 바꾼다.
+9. `.arena-korean-patch/install-state.json`에 설치 상태를 기록한다.
 
-`install-state.json`은 제거·검사에 필요한 사실만 기록한다.
+Steam의 `Arena (Full Screen).bat`과 `Arena (Windowed).bat`은 둘 다 같은 `arena.conf`를 사용하므로 BAT 파일 자체는 수정하지 않는다.
 
-```json
-{
-  "patchVersion": "0.1.0",
-  "gameVersion": "steam-cd-1.07",
-  "installedAt": "2026-07-11T00:00:00+09:00",
-  "runtimePath": "ARENA_KR",
-  "sourcePath": "ARENA",
-  "addedFiles": ["ARENA_KR/ACDKR.EXE"],
-  "installedFiles": [{"path": "ARENA_KR/TITLE.IMG", "sha256": "..."}]
-}
+## 트랜잭션과 자동 롤백
+
+설치 중 교체할 파일은 `.arena-korean-patch/transactions/<임시 ID>`에 백업한다. 어느 단계든 실패하면 이번 실행에서 변경한 파일을 역순으로 되돌린다. 최초 설치 중 새로 만든 `ARENA_KR`도 실패 시 제거한다. 성공하거나 롤백이 끝나면 임시 트랜잭션 디렉터리를 삭제한다.
+
+원본 `ARENA`의 게임 파일은 직접 수정하지 않는다.
+
+## 설치 상태 검사
+
+3번 메뉴는 설치 상태 파일, 관리 대상 파일의 SHA-256과 현재 `arena.conf`를 검사한다. 검사는 파일을 변경하지 않는다.
+
+## 원본 실행 설정 복구
+
+4번 메뉴에서 `RESTORE`를 입력하면 백업한 원본 `arena.conf`를 복원한다. Steam은 다시 원본 `ARENA`를 실행한다.
+
+`ARENA_KR`은 세이브 보호를 위해 삭제하지 않는다. 다시 설치하면 기존 `ARENA_KR`을 유지하면서 관리 대상 파일만 검증된 버전으로 갱신한다.
+
+## 자동 업데이트
+
+2번 메뉴는 GitHub의 최신 릴리스를 조회한다. 현재 패키지보다 새 버전이 있으면 다음 두 릴리스 자산을 내려받는다.
+
+```text
+Arena-Korean-Patch-v<버전>.zip
+Arena-Korean-Patch-v<버전>.zip.sha256
 ```
 
-## 확인 입력
+ZIP의 SHA-256을 확인한 뒤 게임 폴더 아래 `.arena-korean-patch/updates/<버전>`에 압축을 풀고 새 설치기를 무인 모드로 실행한다. 인터넷 연결이나 GitHub Release가 없으면 현재 패키지를 이용한 1번 설치는 계속 사용할 수 있다.
 
-- 설치는 `INSTALL`을 정확히 입력해야 진행한다.
-- 복구는 `RESTORE`를 정확히 입력해야 진행한다.
-- 빈 입력은 취소하고 주 메뉴로 돌아간다.
+## 지원 범위와 중단 조건
 
-## 상태 검사
-
-상태 검사는 다음을 구분한다.
-
-- 미설치
-- 정상 설치
-- 일부 파일 누락
-- 사용자가 설치 파일을 수정함
-- 원본 백업 누락
-- 지원하지 않는 원본 버전
-
-검사만 수행할 때는 파일을 생성·복원·삭제하지 않는다.
-
-## 원본 복구
-
-1. 설치 상태를 읽는다.
-2. `ARENA_KR`의 세이브·로그와 설치 후 사용자 생성 파일을 별도 보존 대상으로 분류한다.
-3. 보존 대상이 있으면 사용자에게 경로를 알리고 삭제 전에 확인한다.
-4. 한글 전용 런타임 `ARENA_KR`만 제거한다.
-5. 원본 `ARENA`는 생성·복원·삭제 작업을 하지 않는다.
-6. DOSBox 캡처는 건드리지 않는다.
-7. 복구가 모두 끝난 뒤 상태 파일을 제거한다.
-
-## 업데이트
-
-새 버전도 최초 정품 원본 또는 검증된 원본 백업을 기준으로 생성한다. 이전 한글 출력물을 다음 버전 델타의 입력으로 사용하지 않는다.
-
-## 매니페스트 필수 필드
-
-```json
-{
-  "source": "ARENA/ACD.EXE",
-  "sourceSha256": "...",
-  "patch": "patches/acd.xdelta",
-  "target": "ARENA_KR/ACDKR.EXE",
-  "targetSha256": "...",
-  "mode": "create"
-}
-```
-
-`mode`는 `create`, `replace`, `copy` 중 하나다.
+- Steam판 The Elder Scrolls: Arena 1.07 CD-ROM만 지원한다.
+- 원본 파일 또는 원본 `arena.conf`의 SHA-256이 다르면 변경 없이 중단한다.
+- 게임이나 DOSBox가 실행 중이면 중단한다.
+- ZIP 내부 파일이 손상되거나 결과 해시가 다르면 자동 롤백한다.
+- 설치에 관리자 권한이 필요할 수 있으며, 사용자는 Windows의 권한 요청을 직접 승인해야 한다.

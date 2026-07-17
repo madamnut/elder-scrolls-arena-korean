@@ -1,4 +1,4 @@
-프로젝트 파생 파일: tsr/vision_h9_cache.inc
+프로젝트 파생 파일: HANGUL.FNT, tsr/vision_h9_cache.inc
 기반 폰트와 버전: Galmuri9 2.40.3
 원본 제작자와 저작권: Copyright (c) 2019–2025 Lee Minseo (quiple@quiple.dev)
 원본 주소: https://github.com/quiple/galmuri
@@ -7,5 +7,6 @@
 변환 도구: tools/build_hangul_font.py, tools/build_vision_h9_cache.py
 변환 내용: 현대 한글 11,172자를 Arena용 16×16 원시 레코드로 변환한 뒤, 현재 컷신 키 1400·1402에 필요한 200개 글리프만 NASM 상주 캐시로 추출함.
 중간 HANGUL.FNT SHA-256: BA88F9EADB4BF76A3FC7D68BD07EE2B4609E61B6BD5283C01320DC479F00ADF6
-현재 파생 파일 SHA-256: 69E870F48A1D20AE3F13E6721233CDDEE9901B36C41D118B82B9B19EC66E99A6
+HANGUL.FNT SHA-256: BA88F9EADB4BF76A3FC7D68BD07EE2B4609E61B6BD5283C01320DC479F00ADF6
+vision_h9_cache.inc SHA-256: 69E870F48A1D20AE3F13E6721233CDDEE9901B36C41D118B82B9B19EC66E99A6
 라이선스: SIL Open Font License 1.1

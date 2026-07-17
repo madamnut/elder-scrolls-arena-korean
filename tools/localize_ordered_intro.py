@@ -13,10 +13,10 @@ from localize_opening_slides import remove_english_glyphs
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "korean-patch" / "analysis" / "bsa-decoded"
-OUTPUT = ROOT / "korean-patch" / "build" / "ordered-intro"
-PREVIEW = ROOT / "korean-patch" / "analysis" / "ordered-intro-korean"
-FONT_PATH = ROOT / "korean-patch" / "reference" / "galmuri" / "dist" / "Galmuri11-Bold.ttf"
+SOURCE = ROOT / "arena-korean-work" / "analysis" / "bsa-decoded"
+OUTPUT = ROOT / "arena-korean-work" / "build" / "ordered-intro"
+PREVIEW = ROOT / "arena-korean-work" / "analysis" / "ordered-intro-korean"
+FONT_PATH = ROOT / "arena-korean-work" / "reference" / "galmuri" / "dist" / "Galmuri11-Bold.ttf"
 
 
 SCROLL_TEXT = {

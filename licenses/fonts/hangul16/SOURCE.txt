@@ -1,0 +1,11 @@
+프로젝트 파생 파일: HANGUL16.FNT
+기반 폰트와 버전: Neo둥근모 1.601
+원본 제작자와 저작권: Copyright (c) 2017-2021, Eunbin Jeong (Dalgona.)
+원본 주소: https://github.com/neodgm/neodgm
+원본 파일: neodgm.ttf
+원본 파일 SHA-256: 77305267996073AAE07BAD9313DAD2E306A4128E55BFAFBED4C41558FEE57B4D
+변환 도구: tools/build_hangul_banks.py
+변환 내용: 현대 한글 11,172자를 Arena용 16×16 원시 레코드로 변환함.
+HANGUL16.FNT SHA-256: 756D980E08F0541567B760973922CF3F5D6371EF7B472833D0452C46AB28296C
+라이선스: SIL Open Font License 1.1
+예약 글꼴 이름은 파생 파일 이름으로 사용하지 않음.

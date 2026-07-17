@@ -11,8 +11,8 @@ from akc_codec import encode as encode_akc
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_INPUT = ROOT / "korean-patch" / "translations" / "QUEST_KR.utf8.txt"
-DEFAULT_OUTPUT = ROOT / "korean-patch" / "build" / "QUEST_KR.TXT"
+DEFAULT_INPUT = ROOT / "elder-scrolls-arena-korean" / "translations" / "QUEST_KR.utf8.txt"
+DEFAULT_OUTPUT = ROOT / "arena-korean-work" / "build" / "QUEST_KR.TXT"
 FONT_B_PATH = ROOT / "ARENA" / "FONT_B.DAT"
 QUESTION_PATH = ROOT / "ARENA" / "QUESTION.TXT"
 HANGUL_ADVANCE = 10

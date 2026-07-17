@@ -1,0 +1,11 @@
+프로젝트 파생 파일: HANGUL12.FNT
+기반 폰트와 버전: 물마루 Mono
+원본 제작자와 저작권: Copyright (c) 2025, Mushsooni
+원본 주소: https://github.com/mushsooni/mulmaru
+원본 파일: MulmaruMono.pfp
+원본 파일 SHA-256: A172AD1CCE3734D0AF7B2D8F8D0F3E45AAFBE39606A80E8F1C1E97A2167319DD
+변환 도구: tools/build_hangul_banks.py
+변환 내용: 현대 한글 11,172자를 Arena용 16×16 원시 레코드의 12픽셀 글리프로 변환함.
+HANGUL12.FNT SHA-256: 5FBCD2D00849C06FAED2E34D5A995B9062C9FCA35E7357864C2C163F446177E2
+라이선스: SIL Open Font License 1.1
+예약 글꼴 이름은 파생 파일 이름으로 사용하지 않음.

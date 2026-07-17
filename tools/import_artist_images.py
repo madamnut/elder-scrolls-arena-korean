@@ -12,10 +12,10 @@ from arena_img import decode as decode_img, encode_uncompressed, palette_8bit
 
 
 ROOT = Path(__file__).resolve().parents[2]
-INPUT = ROOT / "korean-patch" / "artist-handoff" / "해상도조정완료"
-ORIGINAL = ROOT / "korean-patch" / "analysis" / "bsa-decoded"
-OUTPUT = ROOT / "korean-patch" / "build" / "artist-final"
-PREVIEW = ROOT / "korean-patch" / "analysis" / "artist-final-indexed"
+INPUT = ROOT / "arena-korean-work" / "artist-handoff" / "해상도조정완료"
+ORIGINAL = ROOT / "arena-korean-work" / "analysis" / "bsa-decoded"
+OUTPUT = ROOT / "arena-korean-work" / "build" / "artist-final"
+PREVIEW = ROOT / "arena-korean-work" / "analysis" / "artist-final-indexed"
 
 MAPPING = {
     "01_QUOTE.png": "QUOTE.IMG",

@@ -4,6 +4,32 @@ Steam판 **The Elder Scrolls: Arena 1.07 CD-ROM**을 원본 DOS 엔진 그대로
 
 이 프로젝트는 Bethesda 또는 Microsoft와 관련이 없다. 사용자는 정식으로 설치한 게임 파일을 직접 보유해야 한다. 공개 배포물에는 게임 전체나 Bethesda 원본 아카이브를 넣지 않고, 지원 버전의 원본 해시를 검사한 뒤 차이만 적용하는 패처를 제공하는 것을 목표로 한다.
 
+## 설치 및 사용
+
+1. 저장소의 `Code` → `Download ZIP`을 누르거나 [GitHub Releases](https://github.com/madamnut/elder-scrolls-arena-korean/releases)에서 최신 `Arena-Korean-Patch-v<버전>.zip`을 받는다.
+2. 받은 ZIP을 원하는 폴더에 완전히 압축 해제한다.
+3. 압축을 푼 폴더의 `Installer.bat`을 더블클릭한다.
+4. 메뉴에서 `1`번을 선택하고 `INSTALL`을 입력한다.
+5. 설치가 끝나면 Steam에서 평소처럼 전체 화면 또는 창 모드로 실행한다.
+
+저장소 ZIP과 릴리스 ZIP 모두 압축을 풀면 최상단에 `Installer.bat`이 있다. 설치기는 Steam 라이브러리에서 Arena 경로를 자동으로 찾는다. 찾지 못할 때만 설치 폴더를 직접 입력받는다. 설치 과정과 진행률이 화면에 표시되며, 파일 검증이나 적용에 실패하면 이번 실행의 변경 사항을 자동으로 되돌린다.
+
+### 설치기 메뉴
+
+```text
+[1] 한글 패치 설치 또는 현재 패키지로 업데이트
+[2] 최신 버전 확인 및 자동 업데이트
+[3] 설치 상태 검사
+[4] 원본 실행 설정 복구
+[0] 종료
+```
+
+4번 복구는 Steam 실행 설정을 원본으로 되돌린다. 한글판 세이브 보호를 위해 `ARENA_KR`은 지우지 않는다. 자세한 동작은 [설치기 구현과 사용법](docs/INSTALLER.ko.md)을 참고한다.
+
+제작: **madamnut**
+
+저장소: <https://github.com/madamnut/elder-scrolls-arena-korean>
+
 ## 현재 상태
 
 ### 완료 또는 실행 확인
@@ -33,7 +59,7 @@ Steam판 **The Elder Scrolls: Arena 1.07 CD-ROM**을 원본 DOS 엔진 그대로
 - 본편 UI, 대화, 퀘스트, 지도, 저장·불러오기
 - 첫 본편 리아 실메인 꿈 키 1500·1294 실기 검증과 후속 꿈 키 1295~1302
 - 제이거 탄과 엔딩을 포함한 나머지 런타임 컷신 자막
-- 설치·검사·복구를 제공하는 단일 CMD 패처
+- 설치기의 실제 사용자 환경 추가 검증과 릴리스 자동화
 
 ## 지원 대상
 
@@ -48,12 +74,11 @@ Steam판 **The Elder Scrolls: Arena 1.07 CD-ROM**을 원본 DOS 엔진 그대로
 
 해시가 다른 실행 파일에는 패치를 강제로 적용하지 않는다. 다른 언어판이나 GOG판 지원은 별도의 원본 조사와 매니페스트가 필요하다.
 
-## 실행 중인 개발판
+## 개발용 한글 실행 환경
 
 현재 작업 폴더에서는 다음 파일을 사용한다.
 
 ```text
-Arena Korean Test (Windowed).bat
 ARENA_KR/ACDKR.EXE
 ARENA_KR/ARENAKR.COM
 ARENA_KR/HANGUL.FNT
@@ -65,10 +90,9 @@ ARENA_KR/VISION.FLC
 ARENA_KR/CHAOSVSN.FLC
 ARENA_KR/TEMPL_KR.DAT
 ARENA_KR/QUEST_KR.TXT
-DOSBox-0.74/arena-korean-test.conf
 ```
 
-`ARENA_KR`은 정품 설치본 `ARENA`에서 사용자 PC에 로컬로 생성하는 한글 전용 런타임이다. 원본 실행과 한글 실행이 느슨한 이미지 파일을 공유하지 않도록 두 디렉터리를 분리한다. 일반 사용자를 위한 배포판은 아직 완성되지 않았다. 개발판 실행 전에는 DOSBox를 완전히 종료해야 갱신된 TSR이 다시 적재된다.
+`ARENA_KR`은 정품 설치본 `ARENA`에서 사용자 PC에 로컬로 생성하는 한글 전용 런타임이다. 원본 실행과 한글 실행이 느슨한 이미지 파일을 공유하지 않도록 두 디렉터리를 분리한다. 배포용 설치기는 원본 `arena.conf`를 백업한 뒤 Steam의 기존 전체 화면·창 모드 실행이 이 런타임을 사용하게 한다. 개발판 실행 전에는 DOSBox를 완전히 종료해야 갱신된 TSR이 다시 적재된다.
 
 ## 기술 개요
 
@@ -88,13 +112,14 @@ S = Unicode 완성형 한글 인덱스 (가=0, 힣=11171)
 
 - [아키텍처와 런타임 구조](docs/ARCHITECTURE.ko.md)
 - [한글 폰트 정책과 라이선스](docs/FONTS.ko.md)
-- [단일 CMD 설치기 사양](docs/INSTALLER.ko.md)
+- [설치기 구현과 사용법](docs/INSTALLER.ko.md)
 - [개발 및 빌드 절차](docs/DEVELOPMENT.ko.md)
 - [번역·문체·자리표시자 규칙](docs/TRANSLATION.ko.md)
 - [실행 시험과 회귀 테스트](docs/TESTING.ko.md)
 - [런타임 컷신 호출 매트릭스](docs/CUTSCENE_MATRIX.ko.md)
 - [장면별 컷신 한국어 대사](docs/CUTSCENE_DIALOGUE.ko.md)
 - [GitHub 및 릴리스 배포 정책](docs/DISTRIBUTION.ko.md)
+- [개발 디렉터리 구조](docs/DIRECTORY_LAYOUT.ko.md)
 - [파일 인벤토리와 소유권](docs/FILE_INVENTORY.ko.md)
 - [기여 안내](CONTRIBUTING.ko.md)
 - [변경 기록](CHANGELOG.md)
@@ -122,7 +147,7 @@ Git LFS는 원본 게임 파일을 공개해도 된다는 허가가 아니므로
 
 - 프로젝트 코드의 공개 라이선스는 저장소 공개 전에 별도로 결정한다.
 - 한글 글리프 뱅크는 기반 폰트의 SIL Open Font License 1.1 조건을 따르며, 자세한 의무는 [폰트 정책 문서](docs/FONTS.ko.md)에 기록한다.
-- xdelta3 실행 파일을 번들할 경우 GPL-2.0 조건과 고지를 따른다.
+- 배포 델타는 프로젝트가 직접 구현한 `arena-korean-delta-v1` 형식을 사용한다.
 - 게임 이름, 원본 코드, 그림, 음악, 음성 및 데이터의 권리는 각 권리자에게 있다.
 
 ## 안전 원칙

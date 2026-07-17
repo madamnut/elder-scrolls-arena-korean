@@ -12,10 +12,10 @@ from arena_img import decode as decode_img, encode_uncompressed
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "korean-patch" / "analysis" / "bsa-decoded"
-OUTPUT = ROOT / "korean-patch" / "build" / "opening-slides"
-PREVIEW = ROOT / "korean-patch" / "analysis" / "opening-slides-korean"
-FONT = ROOT / "korean-patch" / "reference" / "galmuri" / "dist" / "Galmuri11-Bold.ttf"
+SOURCE = ROOT / "arena-korean-work" / "analysis" / "bsa-decoded"
+OUTPUT = ROOT / "arena-korean-work" / "build" / "opening-slides"
+PREVIEW = ROOT / "arena-korean-work" / "analysis" / "opening-slides-korean"
+FONT = ROOT / "arena-korean-work" / "reference" / "galmuri" / "dist" / "Galmuri11-Bold.ttf"
 
 
 # (cover rectangle, text origin, Korean text)
