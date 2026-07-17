@@ -51,6 +51,9 @@ Arena-Korean-Patch-v0.1.0.zip
 | `TEMPLATE.DAT` | `TEMPL_KR.DAT` |
 | `TITLE.IMG` | 한글 `TITLE.IMG` |
 | `SCROLL03.IMG` | 한글 `SCROLL03.IMG` |
+| `TAMRIEL.MNU` | 한글 `TAMRIEL.MNU` |
+
+델타 결과와 payload는 원본 `ARENA`가 아니라, 설치 시 그 원본으로부터 로컬 생성한 `ARENA_KR`에 배치한다. 배포 ZIP에는 원본 게임 파일이나 완성된 `ARENA_KR` 디렉터리를 포함하지 않는다.
 
 `ARENAKR.COM`, `QUEST_KR.TXT`처럼 직접 작성한 파일은 payload로 복사한다. `HANGUL9.FNT`, `HANGUL12.FNT`, `HANGUL16.FNT`처럼 외부 폰트를 변환한 파일은 원저작권 문구, OFL 전문과 출처·변환 기록을 함께 배포한다. 세부 구조는 [폰트 정책 문서](FONTS.ko.md)를 따른다.
 

@@ -24,6 +24,13 @@ class CatalogError(ValueError):
     pass
 
 
+CUTSCENE_TEMPLATE_KEYS = {
+    1294, 1295, 1296, 1297, 1298, 1299, 1300, 1301, 1302,
+    1392, 1393, 1394, 1395, 1396, 1397, 1398, 1399,
+    1400, 1402, 1403, 1500,
+}
+
+
 def normalize_newlines(text: str) -> str:
     return text.replace("\r\n", "\n").replace("\r", "\n")
 
@@ -72,6 +79,15 @@ def validate_translation(entry: dict) -> None:
             f"{entry['id']}: 자리표시자가 달라졌습니다. "
             f"원문={dict(source_tokens)}, 번역={dict(translation_tokens)}"
         )
+    key_match = re.search(r"(?:^|;)key=(\d+)(?:;|$)", entry.get("locator", ""))
+    if key_match and int(key_match.group(1)) in CUTSCENE_TEMPLATE_KEYS:
+        source_lines = normalize_newlines(source).splitlines()
+        translation_lines = normalize_newlines(translation).splitlines()
+        if len(source_lines) != len(translation_lines):
+            raise CatalogError(
+                f"{entry['id']}: 컷신 행 수가 다릅니다. "
+                f"원문={len(source_lines)}, 번역={len(translation_lines)}"
+            )
     try:
         encode_akc(translation)
     except AKCError as exc:
@@ -129,6 +145,44 @@ def replace_record_body(text: str, start: int, end: int, value: str, keep_tilde:
     return text[:start] + leading + prefix + value.rstrip("\n") + trailing + text[end:]
 
 
+def pad_hash_record_value(original: str, value: str, newline: str, entry_id: str) -> str:
+    """Keep the next hash-record header at its original byte offset.
+
+    Arena's hash-record lookup retains the original body offsets. A shorter
+    Korean record therefore makes a later key read from the middle of the
+    following record. Put inert ASCII padding immediately after the final
+    ``&`` terminator so the displayed text is unchanged while every following
+    header remains at its retail offset.
+    """
+    leading_match = re.match(r"\n*", original)
+    trailing_match = re.search(r"\n*$", original)
+    leading = leading_match.group(0) if leading_match else ""
+    trailing = trailing_match.group(0) if trailing_match else ""
+    core = value.rstrip("\n")
+
+    original_size = len(encode_akc(original.replace("\n", newline)))
+    replacement = leading + core + trailing
+    replacement_size = len(encode_akc(replacement.replace("\n", newline)))
+    if replacement_size > original_size:
+        raise CatalogError(
+            f"{entry_id}: 해시 레코드 번역이 원본 영역보다 큽니다. "
+            f"원본={original_size}바이트, 번역={replacement_size}바이트"
+        )
+
+    padding = original_size - replacement_size
+    if not padding:
+        return core
+    terminator = core.rfind("&")
+    insert_at = terminator + 1 if terminator >= 0 else len(core)
+    padded = core[:insert_at] + (" " * padding) + core[insert_at:]
+    final_size = len(
+        encode_akc((leading + padded + trailing).replace("\n", newline))
+    )
+    if final_size != original_size:
+        raise AssertionError((entry_id, original_size, final_size))
+    return padded
+
+
 def build_hash_file(source_path: Path, entries: list[dict]) -> bytes:
     raw = source_path.read_bytes()
     newline = "\r\n" if b"\r\n" in raw else "\n"
@@ -148,10 +202,24 @@ def build_hash_file(source_path: Path, entries: list[dict]) -> bytes:
         body = text[start:end].lstrip("\n").rstrip("\n")
         if normalize_newlines(body) != normalize_newlines(entry["source"]):
             raise CatalogError(f"{entry['id']}: 원본 해시 레코드가 카탈로그와 다릅니다.")
-        changes.append((start, end, value))
+        original = text[start:end]
+        padded_value = pad_hash_record_value(original, value, newline, entry["id"])
+        changes.append((start, end, padded_value))
     for start, end, value in sorted(changes, reverse=True):
         text = replace_record_body(text, start, end, value, keep_tilde=False)
-    return encode_akc(text.replace("\n", newline))
+    output = encode_akc(text.replace("\n", newline))
+    header_bytes_re = re.compile(br"(?m)^#([^\r\n]*)\r?$")
+    source_headers = [
+        (match.group(1), match.start()) for match in header_bytes_re.finditer(raw)
+    ]
+    output_headers = [
+        (match.group(1), match.start()) for match in header_bytes_re.finditer(output)
+    ]
+    if len(output) != len(raw) or output_headers != source_headers:
+        raise CatalogError(
+            f"{source_path.name}: 해시 레코드의 원본 바이트 위치가 바뀌었습니다."
+        )
+    return output
 
 
 def build_whole_file(source_path: Path, entries: list[dict]) -> bytes:
@@ -261,4 +329,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import defaultdict, deque
 from dataclasses import dataclass
 from pathlib import Path
 import struct
@@ -58,6 +59,123 @@ def decode_type04(data: bytes, output_size: int) -> bytes:
         mask >>= 1
         bits_left -= 1
     output.extend(b"\0" * (output_size - len(output)))
+    return bytes(output)
+
+
+def encode_type04(data: bytes, target_size: int | None = None) -> bytes:
+    """Greedy type-4 encoder, optionally expanded to an exact byte length."""
+    positions: dict[bytes, deque[int]] = defaultdict(deque)
+    tokens: list[tuple[int, int, int]] = []  # source, match source (-1 for literal), length
+    source = 0
+    while source < len(data):
+        best_pos = -1
+        best_length = 0
+        if source + 3 <= len(data):
+            key = data[source : source + 3]
+            candidates = positions[key]
+            while candidates and source - candidates[0] > 4096:
+                candidates.popleft()
+            for candidate in reversed(candidates):
+                distance = source - candidate
+                length = 0
+                limit = min(18, len(data) - source)
+                while length < limit:
+                    compare_at = candidate + (length % distance)
+                    if data[source + length] != data[compare_at]:
+                        break
+                    length += 1
+                if length > best_length:
+                    best_pos = candidate
+                    best_length = length
+                    if length == 18:
+                        break
+
+        token_start = source
+        if best_length >= 3:
+            tokens.append((source, best_pos, best_length))
+            source += best_length
+        else:
+            tokens.append((source, -1, 1))
+            source += 1
+
+        for index in range(token_start, source):
+            if index + 3 <= len(data):
+                queue = positions[data[index : index + 3]]
+                queue.append(index)
+                while queue and source - queue[0] > 4096:
+                    queue.popleft()
+
+    def encoded_size(items: list[tuple[int, int, int]]) -> int:
+        payload = sum(1 if match < 0 else 2 for _, match, _ in items)
+        return payload + ((len(items) + 7) // 8)
+
+    if target_size is not None:
+        base_size = encoded_size(tokens)
+        if base_size > target_size:
+            raise ValueError(f"type-4 stream exceeds target: {base_size} > {target_size}")
+        if base_size < target_size:
+            # Turning a match into literals preserves the decoded pixels while
+            # increasing both payload bytes and token-mask usage. Find a subset
+            # whose combined increase makes the stream exactly target_size.
+            states: dict[tuple[int, int], tuple[tuple[int, int], int] | None] = {(0, 0): None}
+            found: tuple[int, int] | None = None
+            base_tokens = len(tokens)
+            base_payload = base_size - ((base_tokens + 7) // 8)
+            for token_index, (_, match, length) in enumerate(tokens):
+                if match < 0:
+                    continue
+                token_delta = length - 1
+                payload_delta = length - 2
+                for state in list(states):
+                    next_state = (state[0] + token_delta, state[1] + payload_delta)
+                    if next_state in states:
+                        continue
+                    final_size = (
+                        base_payload
+                        + next_state[1]
+                        + ((base_tokens + next_state[0] + 7) // 8)
+                    )
+                    if final_size > target_size:
+                        continue
+                    states[next_state] = (state, token_index)
+                    if final_size == target_size:
+                        found = next_state
+                        break
+                if found is not None:
+                    break
+            if found is None:
+                raise ValueError(f"cannot expand type-4 stream exactly to {target_size} bytes")
+            literalized: set[int] = set()
+            state = found
+            while states[state] is not None:
+                previous, token_index = states[state]  # type: ignore[misc]
+                literalized.add(token_index)
+                state = previous
+            expanded: list[tuple[int, int, int]] = []
+            for token_index, (start, match, length) in enumerate(tokens):
+                if token_index in literalized:
+                    expanded.extend((start + offset, -1, 1) for offset in range(length))
+                else:
+                    expanded.append((start, match, length))
+            tokens = expanded
+
+    output = bytearray()
+    for group_start in range(0, len(tokens), 8):
+        group = tokens[group_start : group_start + 8]
+        mask = 0
+        payload = bytearray()
+        for bit, (start, match, length) in enumerate(group):
+            if match < 0:
+                mask |= 1 << bit
+                payload.append(data[start])
+            else:
+                encoded_pos = ((match & 0xFFF) - 18) & 0xFFF
+                payload.append(encoded_pos & 0xFF)
+                payload.append(((encoded_pos >> 4) & 0xF0) | (length - 3))
+        output.append(mask)
+        output.extend(payload)
+    if target_size is not None and len(output) != target_size:
+        raise AssertionError((len(output), target_size))
     return bytes(output)
 
 

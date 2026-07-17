@@ -62,7 +62,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0patcher\patcher.ps
 
 ## 파일 처리 정책
 
-### 원본을 유지하고 추가
+### 한글 전용 런타임 생성
+
+설치기는 검증된 원본 `ARENA`를 같은 게임 루트의 `ARENA_KR`로 복제한다. 이후 모든 델타 결과와 한글 파일은 `ARENA_KR`에만 적용한다. 원본 `ARENA`에는 파일을 추가하거나 교체하지 않는다.
+
+### 원본에서 파생해 추가
 
 | 원본 | 설치 결과 |
 |---|---|
@@ -76,24 +80,22 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0patcher\patcher.ps
 ```text
 ARENAKR.COM
 HANGUL.FNT
+HANGUL12.FNT
+HANGUL16.FNT
 QUEST_KR.TXT
 Arena Korean Test (Windowed).bat
 arena-korean-test.conf
 ```
 
-### 백업 후 같은 이름으로 교체
+### `ARENA_KR`에서 같은 이름으로 교체
 
 ```text
 TITLE.IMG
 SCROLL03.IMG
+TAMRIEL.MNU
 ```
 
-백업 경로 예시:
-
-```text
-ARENA/.arena-korean-backup/original/TITLE.IMG
-ARENA/.arena-korean-backup/original/SCROLL03.IMG
-```
+이 파일들의 원본은 `ARENA`에 그대로 남으므로 별도 복원용 백업을 만들지 않는다.
 
 ## 설치 상태 파일
 
@@ -104,15 +106,10 @@ ARENA/.arena-korean-backup/original/SCROLL03.IMG
   "patchVersion": "0.1.0",
   "gameVersion": "steam-cd-1.07",
   "installedAt": "2026-07-11T00:00:00+09:00",
-  "addedFiles": ["ARENA/ACDKR.EXE"],
-  "replacedFiles": [
-    {
-      "path": "ARENA/TITLE.IMG",
-      "backup": "ARENA/.arena-korean-backup/original/TITLE.IMG",
-      "originalSha256": "...",
-      "installedSha256": "..."
-    }
-  ]
+  "runtimePath": "ARENA_KR",
+  "sourcePath": "ARENA",
+  "addedFiles": ["ARENA_KR/ACDKR.EXE"],
+  "installedFiles": [{"path": "ARENA_KR/TITLE.IMG", "sha256": "..."}]
 }
 ```
 
@@ -138,13 +135,12 @@ ARENA/.arena-korean-backup/original/SCROLL03.IMG
 ## 원본 복구
 
 1. 설치 상태를 읽는다.
-2. 교체 파일이 설치 후 수정됐는지 확인한다.
-3. 수정됐으면 `.user-modified`로 보존하고 사용자에게 알린다.
-4. 백업의 원본 해시를 검증한다.
-5. `TITLE.IMG`, `SCROLL03.IMG`를 복원한다.
-6. 상태 파일에 기록된 추가 파일만 삭제한다.
-7. 세이브·로그·DOSBox 캡처는 건드리지 않는다.
-8. 복구가 모두 끝난 뒤 상태 파일을 제거한다.
+2. `ARENA_KR`의 세이브·로그와 설치 후 사용자 생성 파일을 별도 보존 대상으로 분류한다.
+3. 보존 대상이 있으면 사용자에게 경로를 알리고 삭제 전에 확인한다.
+4. 한글 전용 런타임 `ARENA_KR`만 제거한다.
+5. 원본 `ARENA`는 생성·복원·삭제 작업을 하지 않는다.
+6. DOSBox 캡처는 건드리지 않는다.
+7. 복구가 모두 끝난 뒤 상태 파일을 제거한다.
 
 ## 업데이트
 
@@ -157,11 +153,10 @@ ARENA/.arena-korean-backup/original/SCROLL03.IMG
   "source": "ARENA/ACD.EXE",
   "sourceSha256": "...",
   "patch": "patches/acd.xdelta",
-  "target": "ARENA/ACDKR.EXE",
+  "target": "ARENA_KR/ACDKR.EXE",
   "targetSha256": "...",
   "mode": "create"
 }
 ```
 
 `mode`는 `create`, `replace`, `copy` 중 하나다.
-

@@ -21,15 +21,18 @@ Steam판 **The Elder Scrolls: Arena 1.07 CD-ROM**을 원본 DOS 엔진 그대로
 - 직업 판정 질문 40개와 선택지 120개
 - 원본 `QUESTION.TXT`를 보존하는 별도 `QUEST_KR.TXT` 로딩
 - 원본과 분리된 `GLOBAL_K.BSA`, `INTKR.FLC`, `TEMPL_KR.DAT`
+- 직업 선택, 이름·성별·출신 지역 선택, 혈통 안내, 능력치 배분과 외형 선택
+- 탐리엘 지역 지도와 지역명, 능력치 UI, 메인 메뉴의 이미지 고정 글자
+- 리아 실메인 첫 꿈 키 1400의 한글 자막과 37픽셀 자막 밴드
+- 첫 던전 환경 설명과 공통 조작·인벤토리·장비 UI 문구
+- 몬스터, 무기·방어구·재질·물약 등 런타임 이름
 
 ### 작업 중
 
 - 작은 글꼴에서 한글 행간과 밀도 조정
-- 질문 완료 뒤 직업 추천 결과
-- 직업 직접 선택 목록과 직업명 18개
-- 이름, 성별, 종족, 출신지, 능력치, 외형 설정 전 과정
 - 본편 UI, 대화, 퀘스트, 지도, 저장·불러오기
-- 리아 실메인 등 런타임 컷신 자막 검증
+- 첫 본편 리아 실메인 꿈 키 1500·1294 실기 검증과 후속 꿈 키 1295~1302
+- 제이거 탄과 엔딩을 포함한 나머지 런타임 컷신 자막
 - 설치·검사·복구를 제공하는 단일 CMD 패처
 
 ## 지원 대상
@@ -51,17 +54,21 @@ Steam판 **The Elder Scrolls: Arena 1.07 CD-ROM**을 원본 DOS 엔진 그대로
 
 ```text
 Arena Korean Test (Windowed).bat
-ARENA/ACDKR.EXE
-ARENA/ARENAKR.COM
-ARENA/HANGUL.FNT
-ARENA/GLOBAL_K.BSA
-ARENA/INTKR.FLC
-ARENA/TEMPL_KR.DAT
-ARENA/QUEST_KR.TXT
+ARENA_KR/ACDKR.EXE
+ARENA_KR/ARENAKR.COM
+ARENA_KR/HANGUL.FNT
+ARENA_KR/HANGUL12.FNT
+ARENA_KR/HANGUL16.FNT
+ARENA_KR/GLOBAL_K.BSA
+ARENA_KR/INTKR.FLC
+ARENA_KR/VISION.FLC
+ARENA_KR/CHAOSVSN.FLC
+ARENA_KR/TEMPL_KR.DAT
+ARENA_KR/QUEST_KR.TXT
 DOSBox-0.74/arena-korean-test.conf
 ```
 
-일반 사용자를 위한 배포판은 아직 완성되지 않았다. 개발판 실행 전에는 DOSBox를 완전히 종료해야 갱신된 TSR이 다시 적재된다.
+`ARENA_KR`은 정품 설치본 `ARENA`에서 사용자 PC에 로컬로 생성하는 한글 전용 런타임이다. 원본 실행과 한글 실행이 느슨한 이미지 파일을 공유하지 않도록 두 디렉터리를 분리한다. 일반 사용자를 위한 배포판은 아직 완성되지 않았다. 개발판 실행 전에는 DOSBox를 완전히 종료해야 갱신된 TSR이 다시 적재된다.
 
 ## 기술 개요
 
@@ -73,7 +80,7 @@ S = Unicode 완성형 한글 인덱스 (가=0, 힣=11171)
 둘째 바이트 = 0x80 + (S & 0x7F)
 ```
 
-패치한 `ACDKR.EXE`의 폭 계산·문자 그리기 루틴은 `INT 60h`를 호출한다. `ARENAKR.COM` TSR은 ASCII를 원본과 호환되게 처리하고 AKC 한글은 EMS에 적재된 `HANGUL.FNT`에서 읽어 화면에 그린다.
+패치한 `ACDKR.EXE`의 폭 계산·문자 그리기 루틴은 `INT 60h`를 호출한다. `ARENAKR.COM` TSR은 ASCII를 원본과 호환되게 처리하고 AKC 한글은 현재 영문 글꼴 높이에 맞는 `HANGUL.FNT`, `HANGUL12.FNT`, `HANGUL16.FNT`에서 읽어 화면에 그린다.
 
 자세한 구조는 [아키텍처 문서](docs/ARCHITECTURE.ko.md)와 [역공학 기록](REVERSE_ENGINEERING.md)을 참고한다.
 
@@ -85,6 +92,8 @@ S = Unicode 완성형 한글 인덱스 (가=0, 힣=11171)
 - [개발 및 빌드 절차](docs/DEVELOPMENT.ko.md)
 - [번역·문체·자리표시자 규칙](docs/TRANSLATION.ko.md)
 - [실행 시험과 회귀 테스트](docs/TESTING.ko.md)
+- [런타임 컷신 호출 매트릭스](docs/CUTSCENE_MATRIX.ko.md)
+- [장면별 컷신 한국어 대사](docs/CUTSCENE_DIALOGUE.ko.md)
 - [GitHub 및 릴리스 배포 정책](docs/DISTRIBUTION.ko.md)
 - [파일 인벤토리와 소유권](docs/FILE_INVENTORY.ko.md)
 - [기여 안내](CONTRIBUTING.ko.md)
