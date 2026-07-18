@@ -18,6 +18,7 @@
 | `translations/QUEST_KR.utf8.txt` | translation | 포함 | 선택 |
 | `docs/*.md` | source | 포함 | README 포함 |
 | `ARENAKR.COM` | generated | 제외 | payload |
+| `CUTSCN.CCH` | generated | 제외 | payload |
 | `HANGUL9.FNT`, `HANGUL12.FNT`, `HANGUL16.FNT` | generated/OFL | 제외 | payload + 저작권·OFL·출처 고지 |
 | `QUEST_KR.TXT` | generated | 제외 | payload |
 | `ACDKR.EXE` | derived | 제외 | xdelta 결과 |

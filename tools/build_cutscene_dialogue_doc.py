@@ -31,6 +31,11 @@ SCENES = (
     (1399, "제이거 탄 방해 P=8", "P=[0x0F77]=8", "JAGAR.FLC", "VISION.XMI (0x80A5)", "1391+P"),
     (1402, "P=0 사망 — 리아 실메인", "P=[0x0F77]=0에서 사망; 원본 새 게임·첫 조각 전 도달 확인", "VISION.FLC", "VISION.XMI (0x809A)", "고정"),
     (1403, "P=1~8 사망 — 제이거 탄", "1<=P=[0x0F77]<=8에서 사망; 첫 조각 전에는 호출되지 않음", "JAGAR.FLC", "VISION.XMI (0x80A5)", "고정"),
+    (1447, "제국 궁전 — 제이거 탄", "제국 궁전 진입 뒤 호출 지점 0x41C6", "JAGAR.FLC", "호출부 별도 음악 포인터 미확정", "고정"),
+    (1404, "최종 결전 — 제이거 탄의 최후", "불의 보석과 지팡이가 결합된 뒤 호출 지점 0x1F2EE", "NUJAGDTH.FLC", "WINGAME.XMI (0x80BD)", "고정"),
+    (1405, "엔딩 — 황제의 감사", "제이거 탄 장면 직후 호출 지점 0x1F320", "NUKING.FLC", "WINGAME.XMI (0x80BD)", "고정"),
+    (1406, "엔딩 — 리아 실메인", "직접 호출 지점 미확정; 번역·캐시만 준비", "호출 지점 미확정", "호출 지점 미확정", "고정"),
+    (1407, "엔딩 — 영원한 챔피언", "황제의 감사 뒤 호출 지점 0x1F343", "NUKING.FLC", "WINGAME.XMI (0x80BD)", "고정"),
 )
 
 KEY_RE = re.compile(r"(?:^|;)key=(\d+)(?:;|$)")
@@ -115,7 +120,7 @@ def main() -> int:
         "- `&`는 원문 레코드의 종료 표식이므로 삭제하지 않는다.",
         "- `%pcf`, `%pcn`은 플레이어 이름·성별형 치환자이므로 위치와 개수를 유지한다.",
         "- 원문 영어 전문은 공개 문서에 중복하지 않는다. 대신 카탈로그 ID, 원문 행 수와 SHA 기반 ID를 기록한다.",
-        "- 현재 기본 실행본에는 `실기 통과·기본 빌드` 장면만 들어간다.",
+        "- 현재 개발 실행본은 아래 26개 장면을 장면별 캐시 자동 전환 시험 대상으로 함께 배치한다.",
         "",
     ]
 
@@ -127,7 +132,7 @@ def main() -> int:
         entry = catalog[key]
         status, entry_id, translation = translations[key]
         if key in active:
-            status = "현재 ARENA_KR 단일 시험 배치·기본 빌드 제외"
+            status = "현재 ARENA_KR 통합 시험 배치·기본 빌드 제외"
         if entry_id != entry["id"]:
             raise ValueError(f"키 {key}: 번역 ID와 카탈로그 ID가 다릅니다.")
         source = normalize(entry["source"])

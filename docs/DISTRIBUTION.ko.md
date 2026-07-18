@@ -11,16 +11,16 @@ Git 저장소에는 소스, 번역, 문서, 라이선스와 함께 바로 실행
 저장소 루트의 상위 게임 작업 폴더에서 다음 명령을 실행한다.
 
 ```powershell
-python .\elder-scrolls-arena-korean\tools\build_release.py --version 0.3.0
+python .\elder-scrolls-arena-korean\tools\build_release.py --version 0.4.0
 ```
 
 산출물은 Git에 포함하지 않는 개인 작업 디렉터리에 생성된다.
 
 ```text
 arena-korean-work/release/
-├─ Arena-Korean-Patch-v0.3.0/
-├─ Arena-Korean-Patch-v0.3.0.zip
-└─ Arena-Korean-Patch-v0.3.0.zip.sha256
+├─ Arena-Korean-Patch-v0.4.0/
+├─ Arena-Korean-Patch-v0.4.0.zip
+└─ Arena-Korean-Patch-v0.4.0.zip.sha256
 ```
 
 빌드가 성공하면 같은 버전의 `manifest.json`, `patches/`, `payload/`를 공개 저장소 루트의 `patcher/`에도 동기화한다. 이 파일들은 저장소 ZIP 설치에 필요하므로 Git에서 추적한다.
@@ -28,7 +28,7 @@ arena-korean-work/release/
 ## ZIP 구조
 
 ```text
-Arena-Korean-Patch-v0.3.0/
+Arena-Korean-Patch-v0.4.0/
 ├─ Installer.bat
 ├─ README.txt
 └─ patcher/
@@ -59,16 +59,21 @@ Arena-Korean-Patch-v0.3.0/
 | `ARENA/GLOBAL.BSA` | `ARENA_KR/GLOBAL_K.BSA` |
 | `ARENA/INTRO.FLC` | `ARENA_KR/INTKR.FLC` |
 | `ARENA/TEMPLATE.DAT` | `ARENA_KR/TEMPL_KR.DAT` |
+| `ARENA/CITYTXT` | `ARENA_KR/CITYTXT` |
 | `ARENA/TITLE.IMG` | `ARENA_KR/TITLE.IMG` |
 | `ARENA/SCROLL03.IMG` | `ARENA_KR/SCROLL03.IMG` |
 | `ARENA/TAMRIEL.MNU` | `ARENA_KR/TAMRIEL.MNU` |
 | `ARENA/VISION.FLC` | `ARENA_KR/VISION.FLC` |
 | `ARENA/CHAOSVSN.FLC` | `ARENA_KR/CHAOSVSN.FLC` |
+| `ARENA/JAGAR.FLC` | `ARENA_KR/JAGAR.FLC` |
+| `ARENA/NUJAGDTH.FLC` | `ARENA_KR/NUJAGDTH.FLC` |
+| `ARENA/NUKING.FLC` | `ARENA_KR/NUKING.FLC` |
 
 다음 파일은 직접 작성했거나 라이선스 조건에 따라 재배포 가능한 payload다.
 
 ```text
 ARENAKR.COM
+CUTSCN.CCH
 HANGUL.FNT
 HANGUL12.FNT
 HANGUL16.FNT
@@ -86,7 +91,7 @@ Arena-Korean-Patch-v<버전>.zip
 Arena-Korean-Patch-v<버전>.zip.sha256
 ```
 
-릴리스 태그는 `v0.3.0`처럼 작성한다. ZIP 안의 `manifest.json`, 폴더 이름, 태그와 파일 이름의 버전을 일치시킨다.
+릴리스 태그는 `v0.4.0`처럼 작성한다. ZIP 안의 `manifest.json`, 폴더 이름, 태그와 파일 이름의 버전을 일치시킨다.
 
 ## 공개 금지 항목
 

@@ -8,6 +8,7 @@ org 0x100
 %define API_WIDTH       0
 %define API_DRAW        1
 %define API_LINE_HEIGHT 2
+%define API_CUTSCENE_CACHE 3
 %define API_SIGNATURE   0xFFFF
 %define SIGNATURE       0x4B52          ; "KR"
 
@@ -17,7 +18,7 @@ org 0x100
 %define ARENA_COLOR     0x9288
 
 %define BANK_PAGES      22
-%define EMS_PAGES       66
+%define FONT_EMS_PAGES  (BANK_PAGES * 3)
 %define EMS_PHYS_PAGE   3
 %define EMS_PAGE_WORDS  0x400           ; 16 KiB in paragraphs
 %define EMS_PAGE_BYTES  0x4000
@@ -69,10 +70,23 @@ move_src_page   dw 0
     dw glyph_buffer
 move_dest_segment dw 0
 
+cache_move_region:
+cache_move_length dd 0               ; selected cache bytes
+    db 1                              ; source: expanded memory
+cache_move_src_handle dw 0
+    dw 0                              ; one cache starts at page offset zero
+cache_move_src_page dw 0
+    db 0                              ; destination: conventional memory
+    dw 0                              ; destination handle (unused)
+    dw vision_h9_cache
+cache_move_dest_segment dw 0
+
 ; Arena keeps its EMS machinery active while an FLC subtitle callback runs.
 ; Keep every H9 syllable used by staged runtime subtitles resident so drawing
 ; VISION.FLC, CHAOSVSN.FLC, and later scenes never calls the EMS manager.
 %include "vision_h9_cache.inc"
+
+%define EMS_PAGES (FONT_EMS_PAGES + CUTSCENE_CACHE_PAGE_COUNT)
 
 resident_signature dw SIGNATURE
 
@@ -81,6 +95,7 @@ resident_signature dw SIGNATURE
 ;   DX=1: AX=x, BX=y, DS:SI text, ES=Arena data segment,
 ;         return SI immediately after the consumed NUL
 ;   DX=2: AL=original font height, DS:SI line, return AX=line advance
+;   DX=3: AX=TEMPLATE.DAT key; load that scene's H9 cache before FLC playback
 int60_handler:
     cmp dx, API_SIGNATURE
     je .signature
@@ -90,9 +105,70 @@ int60_handler:
     je draw_handler
     cmp dx, API_LINE_HEIGHT
     je line_height_handler
+    cmp dx, API_CUTSCENE_CACHE
+    je cutscene_cache_handler
     jmp far [cs:old_int60]
 .signature:
     mov ax, SIGNATURE
+    iret
+
+cutscene_cache_handler:
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+    push di
+    push bp
+    push ds
+    push es
+
+    mov bp, ax                       ; requested TEMPLATE.DAT key
+    mov word [cs:vision_h9_cache_count], 0
+    mov si, cutscene_cache_table
+    mov cx, CUTSCENE_CACHE_TABLE_COUNT
+.search:
+    jcxz .done
+    cmp bp, [cs:si]
+    je .found
+    add si, 6                       ; key, logical page, entry count
+    loop .search
+    jmp .done
+
+.found:
+    mov di, [cs:si+4]
+    cmp di, CUTSCENE_CACHE_MAX_ENTRIES
+    ja .done
+    mov ax, di
+    mov bx, VISION_H9_CACHE_ENTRY_BYTES
+    mul bx
+    mov [cs:cache_move_length], ax
+    mov word [cs:cache_move_length+2], 0
+    mov ax, [cs:ems_handle]
+    mov [cs:cache_move_src_handle], ax
+    mov ax, [cs:si+2]
+    mov [cs:cache_move_src_page], ax
+    mov ax, cs
+    mov [cs:cache_move_dest_segment], ax
+    push cs
+    pop ds
+    mov si, cache_move_region
+    mov ax, 0x5700                  ; move expanded -> conventional memory
+    int 0x67
+    test ah, ah
+    jnz .done
+    mov [cs:vision_h9_cache_count], di
+
+.done:
+    pop es
+    pop ds
+    pop bp
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
     iret
 
 width_handler:
@@ -406,7 +482,7 @@ draw_handler:
     cmp byte [cs:active_glyph_height], H9_HEIGHT
     jne .hangul_from_ems
     xor ax, ax                      ; low index, inclusive
-    mov dx, VISION_H9_CACHE_COUNT  ; high index, exclusive
+    mov dx, [cs:vision_h9_cache_count] ; high index, exclusive
 .vision_cache_search:
     cmp ax, dx
     jae .hangul_from_ems
@@ -539,9 +615,10 @@ resident_end:
 font_filename9  db 'HANGUL.FNT', 0
 font_filename12 db 'HANGUL12.FNT', 0
 font_filename16 db 'HANGUL16.FNT', 0
+cache_filename  db 'CUTSCN.CCH', 0
 msg_installed db 'Arena Korean renderer installed.', 13, 10, '$'
 msg_already   db 'Arena Korean renderer already installed.', 13, 10, '$'
-msg_no_font   db 'HANGUL.FNT/HANGUL12.FNT/HANGUL16.FNT not found.', 13, 10, '$'
+msg_no_font   db 'Hangul font or CUTSCN.CCH not found.', 13, 10, '$'
 msg_no_ems    db 'EMS allocation/loading failed.', 13, 10, '$'
 file_handle   dw 0
 page_map_was_saved db 0
@@ -616,6 +693,47 @@ load_font_bank:
     stc
     ret
 
+; Load the page-aligned scene cache pack after the three font banks.
+; DX=filename, BP=first logical EMS page. Every cache occupies one full page.
+load_cutscene_cache_pack:
+    mov ax, 0x3D00
+    int 0x21
+    jc .failed
+    mov [file_handle], ax
+    mov di, bp
+    add di, CUTSCENE_CACHE_PAGE_COUNT
+.load_page:
+    mov bx, bp
+    mov dx, [ems_handle]
+    mov ax, 0x4400 + EMS_PHYS_PAGE
+    int 0x67
+    test ah, ah
+    jnz .failed_close
+    push ds
+    mov ax, [cs:ems_frame]
+    add ax, EMS_PHYS_PAGE * EMS_PAGE_WORDS
+    mov ds, ax
+    xor dx, dx
+    mov cx, EMS_PAGE_BYTES
+    mov bx, [cs:file_handle]
+    mov ah, 0x3F
+    int 0x21
+    pop ds
+    jc .failed_close
+    cmp ax, EMS_PAGE_BYTES
+    jne .failed_close
+    inc bp
+    cmp bp, di
+    jb .load_page
+    call close_font
+    clc
+    ret
+.failed_close:
+    call close_font
+.failed:
+    stc
+    ret
+
 release_ems:
     mov dx, [ems_handle]
     test dx, dx
@@ -676,6 +794,9 @@ install:
     jc .font_error_restore
     mov dx, font_filename16
     call load_font_bank
+    jc .font_error_restore
+    mov dx, cache_filename
+    call load_cutscene_cache_pack
     jc .font_error_restore
 
     mov dx, [ems_handle]

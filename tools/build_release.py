@@ -13,7 +13,7 @@ import zipfile
 from arena_delta import build_delta
 
 
-DEFAULT_VERSION = "0.3.0"
+DEFAULT_VERSION = "0.4.0"
 CREATOR = "madamnut"
 REPOSITORY = "https://github.com/madamnut/elder-scrolls-arena-korean"
 
@@ -22,15 +22,20 @@ DELTA_FILES = (
     ("ARENA/GLOBAL.BSA", "ARENA_KR/GLOBAL_K.BSA", "global"),
     ("ARENA/INTRO.FLC", "ARENA_KR/INTKR.FLC", "intro"),
     ("ARENA/TEMPLATE.DAT", "ARENA_KR/TEMPL_KR.DAT", "template"),
+    ("ARENA/CITYTXT", "ARENA_KR/CITYTXT", "citytxt"),
     ("ARENA/TITLE.IMG", "ARENA_KR/TITLE.IMG", "title"),
     ("ARENA/SCROLL03.IMG", "ARENA_KR/SCROLL03.IMG", "scroll03"),
     ("ARENA/TAMRIEL.MNU", "ARENA_KR/TAMRIEL.MNU", "tamriel"),
     ("ARENA/VISION.FLC", "ARENA_KR/VISION.FLC", "vision"),
     ("ARENA/CHAOSVSN.FLC", "ARENA_KR/CHAOSVSN.FLC", "chaosvsn"),
+    ("ARENA/JAGAR.FLC", "ARENA_KR/JAGAR.FLC", "jagar"),
+    ("ARENA/NUJAGDTH.FLC", "ARENA_KR/NUJAGDTH.FLC", "nujagdth"),
+    ("ARENA/NUKING.FLC", "ARENA_KR/NUKING.FLC", "nuking"),
 )
 
 COPY_FILES = (
     ("ARENA_KR/ARENAKR.COM", "ARENA_KR/ARENAKR.COM"),
+    ("ARENA_KR/CUTSCN.CCH", "ARENA_KR/CUTSCN.CCH"),
     ("ARENA_KR/HANGUL.FNT", "ARENA_KR/HANGUL.FNT"),
     ("ARENA_KR/HANGUL12.FNT", "ARENA_KR/HANGUL12.FNT"),
     ("ARENA_KR/HANGUL16.FNT", "ARENA_KR/HANGUL16.FNT"),

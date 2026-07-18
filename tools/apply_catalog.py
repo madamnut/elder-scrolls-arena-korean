@@ -27,8 +27,14 @@ class CatalogError(ValueError):
 CUTSCENE_TEMPLATE_KEYS = {
     1294, 1295, 1296, 1297, 1298, 1299, 1300, 1301, 1302,
     1392, 1393, 1394, 1395, 1396, 1397, 1398, 1399,
-    1400, 1402, 1403, 1500,
+    1400, 1402, 1403, 1404, 1405, 1406, 1407, 1447, 1500,
 }
+
+# These TEMPLATE.DAT macros expand to separate English procedural tables.
+# A translation may deliberately omit them when the surrounding Korean line
+# already carries the same meaning.  All names, locations, pronouns, numbers,
+# and printf-style placeholders remain mandatory.
+OPTIONAL_PROCEDURAL_TEMPLATE_TOKENS = {"%doc", "%jok", "%oc", "%oth"}
 
 
 def normalize_newlines(text: str) -> str:
@@ -74,7 +80,24 @@ def validate_translation(entry: dict) -> None:
         return
     source_tokens = Counter(PLACEHOLDER_RE.findall(source))
     translation_tokens = Counter(PLACEHOLDER_RE.findall(translation))
-    if source_tokens != translation_tokens:
+    tokens_match = source_tokens == translation_tokens
+    if not tokens_match and entry.get("container") == "TEMPLATE.DAT":
+        optional_not_added = all(
+            translation_tokens[token] <= source_tokens[token]
+            for token in OPTIONAL_PROCEDURAL_TEMPLATE_TOKENS
+        )
+        required_source = Counter({
+            token: count
+            for token, count in source_tokens.items()
+            if token not in OPTIONAL_PROCEDURAL_TEMPLATE_TOKENS
+        })
+        required_translation = Counter({
+            token: count
+            for token, count in translation_tokens.items()
+            if token not in OPTIONAL_PROCEDURAL_TEMPLATE_TOKENS
+        })
+        tokens_match = optional_not_added and required_source == required_translation
+    if not tokens_match:
         raise CatalogError(
             f"{entry['id']}: 자리표시자가 달라졌습니다. "
             f"원문={dict(source_tokens)}, 번역={dict(translation_tokens)}"

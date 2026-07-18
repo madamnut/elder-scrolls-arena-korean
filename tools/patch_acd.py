@@ -26,6 +26,10 @@ DRAW_END = 0x9EC3
 LINE_ADVANCE_START = 0x99C4
 LINE_ADVANCE_END = 0x99D6
 RACE_METRIC_HELPER_START = 0x670D
+CUTSCENE_CACHE_HELPER_START = 0x6725
+CUTSCENE_CACHE_ORIGINAL_TARGET = 0x6E38
+CUTSCENE_CACHE_CALL_OFFSET = 0x1EDAB
+CUTSCENE_CACHE_CALL_SOURCE = bytes.fromhex("9a 38 6e 00 00")
 RACE_MEASUREMENT_START = 0x99F2
 EXPECTED_RACE_MEASUREMENT = bytes.fromhex(
     "06 c4 36 34 b0 26 8a 0c 07 fe c1"
@@ -217,9 +221,71 @@ INGAME_MESSAGE_PATCHES = (
     (0x43935, "Pick spell target...", "주문 대상 선택..."),
     (0x4394A, "Fire spell at target...", "대상에게 주문 시전..."),
     (0x43962, "Release spell in your area...", "주변에 주문 방출..."),
+    (0x43AC9, "I have nothing further to discuss!", "더는 할 말이 없다!"),
+    (0x43E9A, "That's in the city...", "도시 안에 있다..."),
+    (0x43EB0, "I have no idea. Try asking in town.", "모르겠다. 마을에서 물어봐라."),
     (0x43ED4, "You see a %s...", "%s 발견..."),
+    (0x43F08, "I don't deal in rumors...\r", "소문은 다루지 않는다...\r"),
+    (0x43FA9, "I'm not sure. Try asking someone outside.", "모르겠다. 밖에 있는 이에게 물어봐라."),
     (0x44261, "Door is locked.", "문이 잠겼다."),
     (0x44271, "Unable to open lock...", "자물쇠 열기 실패..."),
+)
+
+# The two camp choices begin with Arena color-control pairs around their
+# English hotkeys. They cannot use the ASCII-source table above because 0xC0
+# and 0xD4 are raw palette arguments, not text. Keep C/U as the input keys and
+# replace only the visible labels inside the original fixed byte budgets.
+CONTROLLED_INGAME_MESSAGE_PATCHES = (
+    (
+        0x4034E,
+        bytes.fromhex("09 c0 43 09 d4") + b"amp for a while...\r",
+        bytes.fromhex("09 c0 43 09 d4") + encode_akc(" 시간 지정 휴식\r"),
+    ),
+    (
+        0x40367,
+        bytes.fromhex("09 c0 55 09 d4") + b"ntil fully  healed\r",
+        bytes.fromhex("09 c0 55 09 d4") + encode_akc(" 완전 회복까지\r"),
+    ),
+    (
+        0x43F23,
+        bytes.fromhex("09 60") + b"ASK ABOUT ?\r",
+        bytes.fromhex("09 60") + encode_akc("질문 선택\r"),
+    ),
+    (
+        0x43F40,
+        bytes.fromhex("09 c0 57 09 d4") + b"ho are you?\r",
+        bytes.fromhex("09 c0 57 09 d4") + encode_akc(" 누구인가?\r"),
+    ),
+    (
+        0x43F52,
+        bytes.fromhex("09 d4 57 09 c0 68 09 d4") + b"ere is...\r",
+        bytes.fromhex("09 c0 48 09 d4") + encode_akc(" 장소 묻기\r"),
+    ),
+    (
+        0x43F65,
+        bytes.fromhex("09 c0 52 09 d4") + b"umors\r",
+        bytes.fromhex("09 c0 52 09 d4") + encode_akc(" 소문\r"),
+    ),
+    (
+        0x43F71,
+        bytes.fromhex("09 c0 45 09 d4") + b"xit\r",
+        bytes.fromhex("09 c0 45 09 d4") + encode_akc(" 끝\r"),
+    ),
+    (
+        0x43F7B,
+        bytes.fromhex("09 60") + b"Rumor Type\r",
+        bytes.fromhex("09 60") + encode_akc("소문 종류\r"),
+    ),
+    (
+        0x43F92,
+        bytes.fromhex("09 c0 47 09 d4") + b"eneral\r",
+        bytes.fromhex("09 c0 47 09 d4") + encode_akc(" 일반\r"),
+    ),
+    (
+        0x43F9F,
+        bytes.fromhex("09 c0 57 09 d4") + b"ork\r",
+        bytes.fromhex("09 c0 57 09 d4") + encode_akc(" 일\r"),
+    ),
 )
 
 # Runtime-composed gameplay names. Each group is a fixed-count sequential
@@ -373,6 +439,42 @@ GAMEPLAY_NAME_TABLES = (
             "거의 새것", "새것", "물약",
         ),
         "item-condition",
+    ),
+    (
+        0x39CC6,
+        (
+            "north", "northeast", "east", "southeast",
+            "south", "southwest", "west", "northwest",
+        ),
+        (
+            "북쪽", "북동쪽", "동쪽", "남동쪽",
+            "남쪽", "남서쪽", "서쪽", "북서쪽",
+        ),
+        "dialogue-direction",
+    ),
+    (
+        0x43FD3,
+        (
+            "Inn", "Temple", "Equipment Store", "Mages Guild", "Palace",
+            "City gates", "Nearest Inn", "Nearest Temple", "Nearest Store",
+        ),
+        (
+            "여관", "사원", "장비점", "마법사 길드", "궁전",
+            "성문", "가까운 여관", "가까운 사원", "가까운 상점",
+        ),
+        "city-location-dialogue-menu",
+    ),
+    (
+        0x44035,
+        (
+            "Inn", "Temple", "Equipment Store", "Mages Guild", "Palace",
+            "Work", "Nearest Inn", "Nearest Temple", "Nearest Dungeon",
+        ),
+        (
+            "여관", "사원", "장비점", "마법사 길드", "궁전",
+            "일거리", "가까운 여관", "가까운 사원", "가까운 던전",
+        ),
+        "wilderness-location-dialogue-menu",
     ),
 )
 
@@ -586,6 +688,35 @@ def make_line_advance_stub(interrupt: int) -> bytes:
     return stub
 
 
+def apply_cutscene_cache_hook(image: memoryview, interrupt: int) -> None:
+    """Select the scene cache from AX before the common FLC loader runs."""
+    call = bytes(image[CUTSCENE_CACHE_CALL_OFFSET:CUTSCENE_CACHE_CALL_OFFSET + 5])
+    if call != CUTSCENE_CACHE_CALL_SOURCE:
+        raise PatchError(
+            "cutscene cache call differs from the supported ACD.EXE: "
+            f"{call.hex()} != {CUTSCENE_CACHE_CALL_SOURCE.hex()}"
+        )
+    # Keep the existing MZ relocation on the far-call segment word. Only the
+    # offset changes from 6E38 to the helper in the base code segment.
+    image[CUTSCENE_CACHE_CALL_OFFSET + 1:CUTSCENE_CACHE_CALL_OFFSET + 3] = (
+        struct.pack("<H", CUTSCENE_CACHE_HELPER_START)
+    )
+
+    # The width replacement leaves this verified tail as NOPs. Preserve DX,
+    # tell INT 60h which TEMPLATE key remains in AX, then tail-jump to the
+    # original far-call target. Its RETF consumes the original return frame.
+    helper = b"\x52\xBA\x03\x00" + bytes((0xCD, interrupt)) + b"\x5A"
+    next_ip = CUTSCENE_CACHE_HELPER_START + len(helper) + 3
+    helper += b"\xE9" + struct.pack(
+        "<H", (CUTSCENE_CACHE_ORIGINAL_TARGET - next_ip) & 0xFFFF
+    )
+    start = CUTSCENE_CACHE_HELPER_START
+    actual = bytes(image[start:start + len(helper)])
+    if actual != b"\x90" * len(helper):
+        raise PatchError("cutscene cache helper code cave is not empty")
+    image[start:start + len(helper)] = helper
+
+
 def apply_question_scroll_geometry(image: memoryview) -> None:
     """Convert the question scroll's private 8px row grid to HANGUL9 11px."""
     for offset, source, replacement in QUESTION_SCROLL_PATCHES:
@@ -672,6 +803,25 @@ def apply_ingame_messages(image: memoryview) -> None:
             raise PatchError(
                 f"in-game message at 0x{offset:X} differs from the supported ACD.EXE: "
                 f"{actual.hex()} != {expected.hex()}"
+            )
+        payload = replacement + b"\0" + bytes(len(source) - len(replacement))
+        image[offset : offset + len(source) + 1] = payload
+
+
+def apply_controlled_ingame_messages(image: memoryview) -> None:
+    """Replace camp choices while preserving their color controls/hotkeys."""
+    for offset, source, replacement in CONTROLLED_INGAME_MESSAGE_PATCHES:
+        if len(replacement) > len(source):
+            raise PatchError(
+                f"controlled in-game message at 0x{offset:X} exceeds its byte "
+                f"budget: {len(replacement)} > {len(source)}"
+            )
+        actual = bytes(image[offset : offset + len(source) + 1])
+        expected = source + b"\0"
+        if actual != expected:
+            raise PatchError(
+                f"controlled in-game message at 0x{offset:X} differs from the "
+                f"supported ACD.EXE: {actual.hex()} != {expected.hex()}"
             )
         payload = replacement + b"\0" + bytes(len(source) - len(replacement))
         image[offset : offset + len(source) + 1] = payload
@@ -1244,15 +1394,19 @@ def patch(
     relocations = relocation_offsets(data)
     if 0x66FF not in relocations or 0x9E10 not in relocations:
         raise PatchError("후킹 스텁에 필요한 데이터 세그먼트 재배치 항목이 없습니다.")
+    if CUTSCENE_CACHE_CALL_OFFSET + 3 not in relocations:
+        raise PatchError("컷신 캐시 far call의 기존 재배치 항목이 없습니다.")
 
     image[WIDTH_START:WIDTH_END] = make_width_stub(WIDTH_END - WIDTH_START, interrupt)
     image[DRAW_START:DRAW_END] = make_draw_stub(DRAW_END - DRAW_START, interrupt)
     image[LINE_ADVANCE_START:LINE_ADVANCE_END] = make_line_advance_stub(interrupt)
+    apply_cutscene_cache_hook(image, interrupt)
     apply_question_scroll_geometry(image)
     apply_item_list_geometry(image)
     apply_cutscene_akc_filter(image)
     apply_cutscene_subtitle_geometry(image)
     apply_ingame_messages(image)
+    apply_controlled_ingame_messages(image)
     del image
     apply_gameplay_name_tables(data)
     if proof_menu:

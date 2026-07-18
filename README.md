@@ -83,6 +83,7 @@ Steam판 **The Elder Scrolls: Arena 1.07 CD-ROM**을 원본 DOS 엔진 그대로
 ```text
 ARENA_KR/ACDKR.EXE
 ARENA_KR/ARENAKR.COM
+ARENA_KR/CUTSCN.CCH
 ARENA_KR/HANGUL.FNT
 ARENA_KR/HANGUL12.FNT
 ARENA_KR/HANGUL16.FNT
@@ -106,7 +107,7 @@ S = Unicode 완성형 한글 인덱스 (가=0, 힣=11171)
 둘째 바이트 = 0x80 + (S & 0x7F)
 ```
 
-패치한 `ACDKR.EXE`의 폭 계산·문자 그리기 루틴은 `INT 60h`를 호출한다. `ARENAKR.COM` TSR은 ASCII를 원본과 호환되게 처리하고 AKC 한글은 현재 영문 글꼴 높이에 맞는 `HANGUL.FNT`, `HANGUL12.FNT`, `HANGUL16.FNT`에서 읽어 화면에 그린다.
+패치한 `ACDKR.EXE`의 폭 계산·문자 그리기 루틴은 `INT 60h`를 호출한다. `ARENAKR.COM` TSR은 ASCII를 원본과 호환되게 처리하고 AKC 한글은 현재 영문 글꼴 높이에 맞는 `HANGUL.FNT`, `HANGUL12.FNT`, `HANGUL16.FNT`에서 읽어 화면에 그린다. 컷신을 재생하기 전에는 `CUTSCN.CCH`에서 해당 장면의 한글 음절만 상주 캐시로 옮겨 영상 메모리와의 충돌을 피한다.
 
 자세한 구조는 [아키텍처 문서](docs/ARCHITECTURE.ko.md)와 [역공학 기록](REVERSE_ENGINEERING.md)을 참고한다.
 

@@ -6,7 +6,7 @@
 
 ```text
 ==================================================
- 엘더스크롤 아레나 한글 패치 v0.3.0
+ 엘더스크롤 아레나 한글 패치 v0.4.0
  제작: madamnut
  GitHub: https://github.com/madamnut/elder-scrolls-arena-korean
 ==================================================
@@ -35,7 +35,7 @@ patcher/
 ├─ patcher.ps1
 ├─ manifest.json
 ├─ patches/*.akdelta.zip
-├─ payload/
+├─ payload/ARENAKR.COM, CUTSCN.CCH, HANGUL*.FNT, QUEST_KR.TXT
 └─ licenses/
 ```
 

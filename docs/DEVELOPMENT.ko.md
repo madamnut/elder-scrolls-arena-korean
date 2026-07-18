@@ -76,11 +76,17 @@ python .\elder-scrolls-arena-korean\tools\build_hangul_banks.py `
 ## TSR 빌드
 
 ```powershell
-python .\elder-scrolls-arena-korean\tools\build_vision_h9_cache.py `
-  .\elder-scrolls-arena-korean\translations\opening-overrides.json `
-  .\arena-korean-work\build\HANGUL.FNT `
-  .\elder-scrolls-arena-korean\tsr\vision_h9_cache.inc `
-  --template-key 1400
+$keys = 1294..1302 + 1392..1399 + 1400,1402,1403,1404,1405,1406,1407,1447,1500
+$args = @(
+  '.\elder-scrolls-arena-korean\tools\build_cutscene_cache_pack.py',
+  '.\arena-korean-work\build\all-cutscenes.json',
+  '.\arena-korean-work\build\HANGUL.FNT',
+  '.\arena-korean-work\build\CUTSCN.CCH',
+  '.\elder-scrolls-arena-korean\tsr\vision_h9_cache.inc',
+  '--ascii-font', '.\ARENA\ARENAFNT.DAT'
+)
+foreach ($key in $keys) { $args += '--template-key', [string]$key }
+python @args
 
 nasm -f bin `
   .\elder-scrolls-arena-korean\tsr\arena_kr.asm `
@@ -89,7 +95,7 @@ nasm -f bin `
   -l .\arena-korean-work\analysis\arena_kr.lst
 ```
 
-FLC 재생 중에는 Arena가 EMS 프레임을 사용하므로 컷신 자막 음절을 먼저 상주 캐시로 만든다. `--template-key`는 반드시 지정하며 한 장면 묶음에 실제로 재생되는 키만 반복해서 넣는다. 캐릭터 생성·혈통처럼 컷신과 무관한 번역까지 캐시에 넣으면 상주 메모리가 불필요하게 커진다. 컷신 번역이 바뀌면 `vision_h9_cache.inc`와 `ARENAKR.COM`도 반드시 다시 빌드한다. 렌더러를 수정할 때는 이전 바이너리와 바이트 차이를 확인하고 예상한 함수만 바뀌었는지 검토한다.
+FLC 재생 중에는 Arena가 EMS 프레임을 사용하므로 자막 콜백에서 글꼴 EMS를 다시 호출하지 않는다. 빌더는 각 `--template-key`에 16KiB 페이지 하나를 배정한 `CUTSCN.CCH`를 만들고, TSR은 재생 직전에 해당 페이지의 글리프만 256항목 고정 버퍼로 옮긴다. 한 장면의 고유 한글이 256개를 넘거나 실제 전진폭이 320픽셀을 넘으면 빌드를 중단한다. 컷신 번역이 바뀌면 `CUTSCN.CCH`, `vision_h9_cache.inc`, `ARENAKR.COM`을 함께 다시 빌드한다.
 
 ## 컷신 자막 데이터와 FLC 빌드
 
@@ -107,14 +113,18 @@ python .\elder-scrolls-arena-korean\tools\build_cutscene_dialogue_doc.py `
 ```
 
 ```powershell
-python .\elder-scrolls-arena-korean\tools\merge_overrides.py `
-  .\elder-scrolls-arena-korean\translations\opening-overrides.json `
-  .\elder-scrolls-arena-korean\translations\cutscene-staging-overrides.json `
-  --staged-template-key 1402 `
-  --output .\arena-korean-work\build\cutscene-test-overrides.json
+$staged = 1295..1302 + 1392..1399 + 1402,1403,1404,1405,1406,1407,1447
+$args = @(
+  '.\elder-scrolls-arena-korean\tools\merge_overrides.py',
+  '.\elder-scrolls-arena-korean\translations\opening-overrides.json',
+  '.\elder-scrolls-arena-korean\translations\cutscene-staging-overrides.json',
+  '--output', '.\arena-korean-work\build\all-cutscenes.json'
+)
+foreach ($key in $staged) { $args += '--staged-template-key', [string]$key }
+python @args
 ```
 
-`--staged-template-key`는 한 번에 하나씩 추가하며, 앞 장면이 통과하기 전에는 다음 키를 넣지 않는다. 옵션을 생략하면 시험 파일 전체가 병합되므로 실제 배치용 명령에서는 생략하지 않는다. 안정 빌드는 아래 명령처럼 `opening-overrides.json`만 사용한다. 시험 빌드는 `--overrides`와 글리프 캐시 입력을 모두 `cutscene-test-overrides.json`으로 바꾸되, 캐시 생성에는 현재 묶음의 `--template-key 1400 --template-key 1402`처럼 실제 컷신 키만 지정한다. 어느 한쪽만 바꾸면 한글 자막과 상주 글리프 집합이 어긋난다.
+격리 시험은 `--staged-template-key`로 한 키씩 만들 수 있다. 현재 통합 시험판은 staging의 23개 키를 모두 병합하고 stable의 키 1294·1400·1500까지 합친 26개 장면 파일을 사용한다. `TEMPL_KR.DAT`, `CUTSCN.CCH`, `vision_h9_cache.inc`, `ARENAKR.COM`의 키 집합은 항상 같아야 한다.
 
 ```powershell
 python .\elder-scrolls-arena-korean\tools\apply_catalog.py `
@@ -138,9 +148,19 @@ python .\elder-scrolls-arena-korean\tools\localize_vision_band.py `
   .\ARENA\JAGAR.FLC `
   .\arena-korean-work\build\JAGAR.FLC `
   --expected-frames 28
+
+python .\elder-scrolls-arena-korean\tools\localize_vision_band.py `
+  .\ARENA\NUJAGDTH.FLC `
+  .\arena-korean-work\build\NUJAGDTH.FLC `
+  --expected-frames 62
+
+python .\elder-scrolls-arena-korean\tools\localize_vision_band.py `
+  .\ARENA\NUKING.FLC `
+  .\arena-korean-work\build\NUKING.FLC `
+  --expected-frames 17
 ```
 
-`opening-data\loose\TEMPLATE.DAT`는 런타임에서 실행 파일이 요청하는 이름인 `TEMPL_KR.DAT`로 배치한다. Arena는 해시 레코드 본문의 원본 파일 오프셋을 유지하므로 번역 레코드를 가변 길이로 다시 붙이면 안 된다. 빌더는 짧은 번역의 `&` 종료표식 뒤에 공백을 채우고, 원본보다 긴 번역은 거부한다. 출력 파일 크기와 모든 `#키` 헤더의 바이트 오프셋이 원본과 정확히 같아야 한다. FLC 도구는 320×200 영상의 Y=0~162 픽셀, 프레임별 팔레트, 프레임 수와 재생 속도를 보존하고 Y=163~199만 검게 만든 뒤 다시 디코딩해 검증한다. `VISION.FLC`는 20프레임·171ms, `CHAOSVSN.FLC`는 31프레임·114ms, `JAGAR.FLC`는 28프레임·128ms를 유지해야 한다.
+`opening-data\loose\TEMPLATE.DAT`는 런타임에서 실행 파일이 요청하는 이름인 `TEMPL_KR.DAT`로 배치한다. Arena는 해시 레코드 본문의 원본 파일 오프셋을 유지하므로 번역 레코드를 가변 길이로 다시 붙이면 안 된다. 빌더는 짧은 번역의 `&` 종료표식 뒤에 공백을 채우고, 원본보다 긴 번역은 거부한다. 출력 파일 크기와 모든 `#키` 헤더의 바이트 오프셋이 원본과 정확히 같아야 한다. FLC 도구는 320×200 영상의 Y=0~162 픽셀, 프레임별 팔레트, 프레임 수와 재생 속도를 보존하고 Y=163~199만 검게 만든 뒤 다시 디코딩해 검증한다. `VISION.FLC`는 20프레임·171ms, `CHAOSVSN.FLC`는 31프레임·114ms, `JAGAR.FLC`는 28프레임·128ms, `NUJAGDTH.FLC`는 62프레임·142ms, `NUKING.FLC`는 17프레임·114ms를 유지해야 한다.
 
 ## 질문 파일 빌드
 
@@ -179,7 +199,40 @@ python .\elder-scrolls-arena-korean\tools\patch_acd.py `
 
 설치된 `ACDKR.EXE`를 입력으로 다시 패치하지 않는다.
 
-사망 자막 주소 문제를 진행값 분기 우회로 해결하지 않는다. `patch_acd.py`에는 새 게임 뒤 `DS:[0x0F77]`을 강제로 바꾸는 훅이 없어야 하며, 현재 검증 빌드는 SHA-256 `d50e8e66afb5bd7ffb35d1d206ac2e4a79e04af022fbd72dd86b3499dc781768`이다.
+사망 자막 주소 문제를 진행값 분기 우회로 해결하지 않는다. `patch_acd.py`에는 새 게임 뒤 `DS:[0x0F77]`을 강제로 바꾸는 훅이 없어야 한다. 장면 캐시 훅은 공통 FLC 실행기의 기존 재배치 far call 대상만 바꾸며, 직전 검증 실행본과의 차이는 코드 동굴 10바이트와 call 대상 2바이트뿐이어야 한다.
+
+## 마을 주민 인사말 빌드
+
+```powershell
+python .\elder-scrolls-arena-korean\tools\apply_catalog.py `
+  --arena .\ARENA `
+  --catalog .\arena-korean-work\translations-private\catalog.jsonl `
+  --overrides .\elder-scrolls-arena-korean\translations\city-greetings-overrides.json `
+  --output .\arena-korean-work\build\city-greetings `
+  --bsa-output .\arena-korean-work\build\city-greetings\GLOBAL-unchanged.BSA
+```
+
+`loose\CITYTXT`를 `ARENA_KR\CITYTXT`로 배치한다. 64개 레코드는 원문과 같은 행 수를 유지하며, 출력은 원본과 같은 10,669바이트이고 모든 `#키` 헤더 오프셋이 같아야 한다. 휴식 선택지와 주민 대화 메뉴는 `CITYTXT`가 아니라 `patch_acd.py`의 제어 문자열 패치이므로 `ACDKR.EXE`도 함께 다시 빌드한다.
+
+## 마을 주민 답변 빌드
+
+`누구인가?`, 일반 소문, 일거리의 실제 답변은 `translations\npc-dialogue-overrides.json`에서 관리한다. 현재 리아 실메인 26개 장면이 들어 있는 통합 오버라이드와 먼저 병합한 뒤 `TEMPLATE.DAT`를 빌드해야 한다. NPC 파일만 따로 적용하면 컷신 번역이 사라진다.
+
+```powershell
+python .\elder-scrolls-arena-korean\tools\merge_overrides.py `
+  .\arena-korean-work\build\dynamic-cutscene-cache-final\all-cutscenes.json `
+  .\elder-scrolls-arena-korean\translations\npc-dialogue-overrides.json `
+  --output .\arena-korean-work\build\npc-dialogue-combined\all-overrides.json
+
+python .\elder-scrolls-arena-korean\tools\apply_catalog.py `
+  --arena .\ARENA `
+  --catalog .\arena-korean-work\translations-private\catalog.jsonl `
+  --overrides .\arena-korean-work\build\npc-dialogue-combined\all-overrides.json `
+  --output .\arena-korean-work\build\npc-dialogue-combined\data `
+  --bsa-output .\arena-korean-work\build\npc-dialogue-combined\GLOBAL-unchanged.BSA
+```
+
+결과 `data\loose\TEMPLATE.DAT`를 `ARENA_KR\TEMPL_KR.DAT`로 배치한다. 통합 오버라이드는 컷신 26개와 주민 답변 54개, 총 80개 레코드여야 한다. 출력 크기는 원본과 같은 395,981바이트이고 모든 `#키` 헤더의 바이트 오프셋이 같아야 한다. 주민 답변은 일반 인게임 렌더러를 사용하므로 `CUTSCN.CCH`는 다시 만들지 않는다. `apply_catalog.py`는 이름·장소 등 일반 자리표시자의 종류와 횟수를 엄격히 검증하지만, `TEMPLATE.DAT`의 절차 생성 영문 조각 `%oc`, `%doc`, `%jok`, `%oth`는 번역이 의미를 대신할 때에만 원문보다 적게 사용할 수 있다. 번역 쪽에서 새로 추가하는 것은 허용하지 않는다. 장소 목록 두 표와 `%di`의 8방향 표는 `patch_acd.py`의 `GAMEPLAY_NAME_TABLES`에 있으므로 `ACDKR.EXE`도 함께 다시 빌드한다.
 
 ## BSA 작업
 
