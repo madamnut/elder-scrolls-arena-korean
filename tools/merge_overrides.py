@@ -19,6 +19,11 @@ def main() -> int:
     parser.add_argument("inputs", nargs="+", type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument(
+        "--replace-duplicates",
+        action="store_true",
+        help="뒤 입력의 동일 ID로 앞 입력을 교체",
+    )
+    parser.add_argument(
         "--staged-template-key",
         action="append",
         type=int,
@@ -68,7 +73,7 @@ def main() -> int:
                     found.add(template_key)
             values = filtered
         duplicate = sorted(set(merged).intersection(values))
-        if duplicate:
+        if duplicate and not args.replace_duplicates:
             raise ValueError(f"{path}: 중복 ID: {', '.join(duplicate)}")
         merged.update(values)
 

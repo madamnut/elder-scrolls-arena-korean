@@ -25,6 +25,11 @@
 | `GLOBAL_K.BSA` | derived | 제외 | xdelta 결과 |
 | `INTKR.FLC` | derived | 제외 | xdelta 결과 |
 | `TEMPL_KR.DAT` | derived | 제외 | xdelta 결과 |
+| `ARTFACT1.DAT`, `ARTFACT2.DAT` | derived | 제외 | 델타 결과 |
+| `CITYINTR`, `CITYTXT` | derived | 제외 | 델타 결과 |
+| `DUNGEON.TXT`, `EQUIP.DAT` | derived | 제외 | 델타 결과 |
+| `MUGUILD.DAT`, `SELLING.DAT` | derived | 제외 | 델타 결과 |
+| `SPELLMKR.TXT`, `TAVERN.DAT` | derived | 제외 | 델타 결과 |
 
 ## 이미지 파일
 
@@ -48,6 +53,11 @@
 | `QUEST_KR.TXT` | 한국어 질문 | 새 파일 |
 | `TEMPLATE.DAT` | 컷신·대사 템플릿 | 원본 보존 |
 | `TEMPL_KR.DAT` | 한국어 템플릿 | 새 파일 |
+| `ARTFACT1.DAT`, `ARTFACT2.DAT` | 아티팩트 퀘스트 대사 | 한글 전용 런타임에 델타 적용 |
+| `CITYINTR`, `CITYTXT` | 도시 진입·인사 문구 | 한글 전용 런타임에 델타 적용 |
+| `DUNGEON.TXT` | 던전 이름·설명 | 한글 전용 런타임에 델타 적용 |
+| `EQUIP.DAT` | 장비 관련 문자열 | 한글 전용 런타임에 델타 적용 |
+| `MUGUILD.DAT`, `SELLING.DAT`, `SPELLMKR.TXT`, `TAVERN.DAT` | 길드·상점·주문 제작·주점 대사 | 한글 전용 런타임에 델타 적용 |
 | `CLASSES.DAT` | 직업 판정 수치 | 번역하지 않음 |
 | `STARTGAM.MNU` | 캐릭터 생성 배경 | 그림에 글자 없음 |
 

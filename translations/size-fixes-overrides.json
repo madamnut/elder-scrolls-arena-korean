@@ -1,0 +1,18 @@
+{
+  "SPELLMKR.TXT:record=9;key=09:007f49dbb80a": "%0 체력 방패 생성. %4레벨마다 +%1.",
+  "SPELLMKR.TXT:record=22;key=22:bfc07b4bbd75": "벽 %0개 영구 제거.",
+  "SPELLMKR.TXT:record=23;key=23:da16265e8ce8": "층 %0개 영구 제거.",
+  "SPELLMKR.TXT:record=34;key=34:e7a98460b869": "시전자 %0턴 부양. %4레벨마다 +%1턴.",
+  "TEMPLATE.DAT:record=138;key=0068:7125b5327a46": "키 큰 돼지 얼굴의 남자다...&",
+  "TEMPLATE.DAT:record=311;key=0273:7fda0a90fbf8": "사람들을 두들겨 패지&\n특히 %ra 애들을 패는 걸 좋아해&\n부두 쥐 조직원이지&",
+  "TEMPLATE.DAT:record=347;key=0309:d4fa217caae9": "%en에서 대장장이 수련 중이야&\n일은 다 하고 욕도 다 먹지&\n딱 필요한 만큼만 일해&",
+  "TEMPLATE.DAT:record=458;key=0611:1c5769bfa6ce": "항구 도시 타네스에 잘 왔다. 세상을 두려워 말고 당당히 나아가라...&",
+  "TEMPLATE.DAT:record=460;key=0613:2d0f6bf2a26e": "신성한 분노의 고향 드래곤스타에 잘 왔다. 평화와 안식을 누리되 명예를 어기면 경비대가 상대할 것이다...&",
+  "TEMPLATE.DAT:record=468;key=0621:bcd825f21eed": "팔크레스와 주민들이 그대를 환영한다...&",
+  "TEMPLATE.DAT:record=479;key=0632:89feee373fe7": "서머셋 섬의 하이 엘프 도시 더스크다. 평화롭게 온 이들을 벗으로 맞이한다...&",
+  "TEMPLATE.DAT:record=485;key=0638:c8a42d8143b8": "서머셋 북부의 스카이워치다. 평화에는 온기로, 도전에는 차가운 피로 답한다...&",
+  "TEMPLATE.DAT:record=515;key=1277:2eda21a8b38a": "%omq를 %da까지 %tl에 전하기로 했다.&",
+  "TEMPLATE.DAT:record=520;key=1282:750db71a1c88": "%cn의 %ct에서는 사정 따윈 묻지 않는다. %t %rf을 방해하면 돼지처럼 배를 가를 것이다. 즐겁게 지내라.&",
+  "TEMPLATE.DAT:record=680;key=1446:2ca4e526d5cd": "근처에서 %qmn의 기척이 난다.&",
+  "TEMPLATE.DAT:record=660;key=1426:49c390f280a7": "%a금화, %t일 걸린다. 괜찮나?&"
+}

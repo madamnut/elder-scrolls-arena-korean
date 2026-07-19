@@ -38,6 +38,7 @@ WHOLE_TEXT_FILES = (
 PLACEHOLDER_RE = re.compile(r"%[A-Za-z0-9]+|%%")
 HASH_HEADER_RE = re.compile(r"(?m)^#([^\r\n]*)\r?$" )
 INF_TEXT_HEADER_RE = re.compile(r"(?mi)^\*TEXT[ \t]+([^\r\n]+)\r?$" )
+INF_SECTION_RE = re.compile(r"(?mi)^@[A-Z][A-Z0-9_]*(?:[ \t].*)?\r?$")
 
 
 @dataclass
@@ -130,6 +131,13 @@ def extract_inf(name: str, encrypted_data: bytes) -> list[CatalogEntry]:
     if marker is None:
         return []
     text_section = text[marker.end():]
+    # INF files often place @SOUND and other executable sections directly
+    # after the final prose block.  Those sections are data, not dialogue;
+    # including them in a translation record corrupts filenames and numeric
+    # parameters when a whole record is replaced.
+    next_section = INF_SECTION_RE.search(text_section)
+    if next_section is not None:
+        text_section = text_section[:next_section.start()]
     entries: list[CatalogEntry] = []
     for block_index, (key, body) in enumerate(split_by_headers(text_section, INF_TEXT_HEADER_RE)):
         source = strip_inf_control_prefix(body)
@@ -223,4 +231,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

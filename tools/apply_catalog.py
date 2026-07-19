@@ -15,6 +15,7 @@ from arena_bsa import ArenaBSA, BSAError, command_rebuild, crypt_inf
 from extract_catalog import (
     HASH_HEADER_RE,
     INF_TEXT_HEADER_RE,
+    INF_SECTION_RE,
     PLACEHOLDER_RE,
     strip_inf_control_prefix,
 )
@@ -265,7 +266,11 @@ def build_inf(plain_data: bytes, name: str, entries: list[dict]) -> bytes:
         raise CatalogError(f"{name}: @TEXT 섹션이 없습니다.")
     section_start = marker.end()
     section = text[section_start:]
-    records = split_records(section, INF_TEXT_HEADER_RE)
+    next_section = INF_SECTION_RE.search(section)
+    translatable_section = (
+        section[:next_section.start()] if next_section is not None else section
+    )
+    records = split_records(translatable_section, INF_TEXT_HEADER_RE)
     changes: list[tuple[int, int, str, bool]] = []
     for entry in entries:
         value = translated(entry)
@@ -295,6 +300,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--overrides", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--bsa-output", type=Path, required=True)
+    parser.add_argument(
+        "--bsa-base",
+        type=Path,
+        help="번역 INF를 덮을 BSA. 생략하면 --arena/GLOBAL.BSA를 사용합니다.",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -339,7 +349,8 @@ def main(argv: list[str] | None = None) -> int:
             (loose_dir / container).write_bytes(output_data)
             changed_loose += 1
 
-        command_rebuild(bsa, inf_dir, args.bsa_output, encode_inf=True)
+        rebuild_bsa = ArenaBSA(args.bsa_base) if args.bsa_base else bsa
+        command_rebuild(rebuild_bsa, inf_dir, args.bsa_output, encode_inf=True)
         print(f"translated entries: {len(changed)}")
         print(f"loose replacement files: {changed_loose}")
         print(f"INF replacement files: {changed_inf}")
