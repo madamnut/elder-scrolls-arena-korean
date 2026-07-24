@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "definition": "화자가 플레이어에게 직접 말하거나, 직접 대사를 조립하기 위해 사용되는 문장 조각",
+  "excluded": [
+    "장소에 들어갈 때 표시되는 환경 서술",
+    "전투·아이템·축제·도시 입장 안내와 퀘스트 일지",
+    "NPC의 행동만 서술하고 직접 발화가 없는 문장"
+  ],
+  "whole_containers": [
+    {
+      "container": "EQUIP.DAT",
+      "category": "장비점 거래",
+      "status": "revoiced"
+    },
+    {
+      "container": "SELLING.DAT",
+      "category": "장비 매각 거래",
+      "status": "revoiced"
+    },
+    {
+      "container": "TAVERN.DAT",
+      "category": "주점 숙박 거래",
+      "status": "revoiced"
+    },
+    {
+      "container": "MUGUILD.DAT",
+      "category": "마법사 길드 거래",
+      "status": "revoiced"
+    },
+    {
+      "container": "ARTFACT1.DAT",
+      "category": "유물 정보상 첫 만남",
+      "status": "draft",
+      "exclude_source_prefix": "!"
+    },
+    {
+      "container": "ARTFACT2.DAT",
+      "category": "유물 정보상 재방문",
+      "status": "draft",
+      "exclude_source_prefix": "!"
+    }
+  ],
+  "template_catalog_index_ranges": [
+    {"start": 12, "end": 12, "category": "통치자 의뢰 거절", "status": "draft"},
+    {"start": 65, "end": 91, "category": "통치자 일반 의뢰", "status": "draft"},
+    {"start": 94, "end": 94, "category": "호위 대상 재촉", "status": "draft"},
+    {"start": 97, "end": 97, "category": "호위 대상 재촉", "status": "draft"},
+    {"start": 100, "end": 107, "category": "통치자 일반 의뢰 보상", "status": "draft"},
+    {"start": 115, "end": 115, "category": "일반 의뢰 물품 인계", "status": "draft"},
+    {"start": 155, "end": 163, "category": "주점 일반 의뢰", "status": "draft"},
+    {"start": 165, "end": 166, "category": "주점 일반 의뢰 보상", "status": "draft"},
+    {"start": 169, "end": 198, "category": "시민 신원 대답", "status": "revoiced"},
+    {"start": 199, "end": 408, "category": "시민 소문·일자리·길 안내·조립 문구", "status": "draft"},
+    {"start": 513, "end": 513, "category": "호위 대상 이탈", "status": "revoiced"},
+    {"start": 530, "end": 539, "category": "리아 실메인 지팡이 조각 안내", "status": "reviewed"},
+    {"start": 540, "end": 549, "category": "지팡이 조각 장소 소문", "status": "draft"},
+    {"start": 550, "end": 597, "category": "지팡이 조각 의뢰인", "status": "draft"},
+    {"start": 620, "end": 625, "category": "경비병·통치자", "status": "revoiced"},
+    {"start": 626, "end": 641, "category": "리아·탄·황제 컷신", "status": "reviewed"},
+    {"start": 642, "end": 649, "category": "혈통 안내", "status": "reviewed"},
+    {"start": 650, "end": 654, "category": "수리 기간·비용", "status": "revoiced"},
+    {"start": 657, "end": 661, "category": "수리공 거래", "status": "revoiced"},
+    {"start": 663, "end": 663, "category": "주점 손님의 거절", "status": "revoiced"},
+    {"start": 680, "end": 680, "category": "탄 컷신", "status": "reviewed"},
+    {"start": 809, "end": 809, "category": "궁전 경비병", "status": "revoiced"}
+  ]
+}

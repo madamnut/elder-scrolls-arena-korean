@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "containers": {
+    "ARTFACT1.DAT": "첫 만남",
+    "ARTFACT2.DAT": "거절 뒤 재방문"
+  },
+  "block_size": 13,
+  "positions": {
+    "0-2": "정보상의 등장과 최초 가격 제안 3종",
+    "3": "금화를 받은 뒤 위치와 탐색 경로 설명",
+    "4-6": "지나치게 낮은 제안 거부 3종",
+    "7-9": "협상 결렬과 체류 기한 안내 3종",
+    "10-12": "절충 가격 제안 3종"
+  },
+  "speaker": {
+    "gender": "male",
+    "name_placeholder": "%an",
+    "rule": "서술부의 인칭과 원문 속어·모욕 수위를 보존하되, 같은 원문 흥정 문장은 두 파일과 모든 유물에서 같은 번역을 재사용한다."
+  },
+  "artifacts": [
+    {"block": 0, "name": "Lord's Mail", "korean": "군주의 갑옷", "voice": "친근한 정보상"},
+    {"block": 1, "name": "Oghma Infinium", "korean": "오그마 인피니움", "voice": "귀족적인 정보상"},
+    {"block": 2, "name": "Chrysamere", "korean": "크리사미어", "voice": "은밀하고 불길한 정보상"},
+    {"block": 3, "name": "Staff of Magnus", "korean": "마그누스의 지팡이", "voice": "위험을 경고하는 공모자"},
+    {"block": 4, "name": "Volendrung", "korean": "볼렌드렁", "voice": "거칠고 친근한 정보상"},
+    {"block": 5, "name": "Spell Breaker", "korean": "스펠 브레이커", "voice": "추적자를 경계하는 정보상"},
+    {"block": 6, "name": "Necromancer's Robes", "korean": "네크로맨서의 로브", "voice": "조급한 장사꾼"},
+    {"block": 7, "name": "Auriel's Shield", "korean": "아우리엘의 방패", "voice": "냉소적인 지식인"},
+    {"block": 8, "name": "Ebony Blade", "korean": "에보니 블레이드", "voice": "위협적인 정보상"},
+    {"block": 9, "name": "Warlock's Ring", "korean": "워록의 반지", "voice": "피곤하고 노련한 정보상"},
+    {"block": 10, "name": "Auriel's Bow", "korean": "아우리엘의 활", "voice": "무뚝뚝한 정보상"},
+    {"block": 11, "name": "Skeleton's Key", "korean": "해골 열쇠", "voice": "도둑을 상대하는 거친 정보상"},
+    {"block": 12, "name": "Ring of Phynaster", "korean": "피나스터의 반지", "voice": "붙임성 좋은 정보상"},
+    {"block": 13, "name": "King Orgnum's Coffer", "korean": "오르그눔 왕의 궤", "voice": "자신감 있는 신사"},
+    {"block": 14, "name": "Ebony Mail", "korean": "에보니 메일", "voice": "건장하고 무뚝뚝한 정보상"},
+    {"block": 15, "name": "Ring of the Khajiit", "korean": "카짓의 반지", "voice": "전설을 잘 아는 정보상"}
+  ]
+}

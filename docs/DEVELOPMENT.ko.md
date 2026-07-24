@@ -216,13 +216,20 @@ python .\elder-scrolls-arena-korean\tools\apply_catalog.py `
 
 ## 마을 주민 답변 빌드
 
-`누구인가?`, 일반 소문, 일거리의 실제 답변은 `translations\npc-dialogue-overrides.json`에서 관리한다. 현재 리아 실메인 26개 장면이 들어 있는 통합 오버라이드와 먼저 병합한 뒤 `TEMPLATE.DAT`를 빌드해야 한다. NPC 파일만 따로 적용하면 컷신 번역이 사라진다.
+`누구인가?`, 일반 소문, 일거리의 실제 답변은 `translations\npc-dialogue-overrides.json`에서 관리한다. 역할별 첫 대면·재대면 30개 키의 최종 말투는 `npc-dialogue-revoice-overrides.json`이 같은 ID를 교체한다. 현재 리아 실메인 26개 장면이 들어 있는 통합 오버라이드와 먼저 병합한 뒤 `TEMPLATE.DAT`를 빌드해야 한다. NPC 파일만 따로 적용하면 컷신 번역이 사라진다.
 
 ```powershell
 python .\elder-scrolls-arena-korean\tools\merge_overrides.py `
   .\arena-korean-work\build\dynamic-cutscene-cache-final\all-cutscenes.json `
   .\elder-scrolls-arena-korean\translations\npc-dialogue-overrides.json `
+  .\elder-scrolls-arena-korean\translations\npc-dialogue-revoice-overrides.json `
+  --replace-duplicates `
   --output .\arena-korean-work\build\npc-dialogue-combined\all-overrides.json
+
+python .\elder-scrolls-arena-korean\tools\validate_npc_dialogue_style.py `
+  --catalog .\arena-korean-work\translations-private\catalog.jsonl `
+  --style .\elder-scrolls-arena-korean\translations\npc-dialogue-style.json `
+  --overrides .\elder-scrolls-arena-korean\translations\npc-dialogue-revoice-overrides.json
 
 python .\elder-scrolls-arena-korean\tools\apply_catalog.py `
   --arena .\ARENA `
@@ -232,7 +239,26 @@ python .\elder-scrolls-arena-korean\tools\apply_catalog.py `
   --bsa-output .\arena-korean-work\build\npc-dialogue-combined\GLOBAL-unchanged.BSA
 ```
 
-결과 `data\loose\TEMPLATE.DAT`를 `ARENA_KR\TEMPL_KR.DAT`로 배치한다. 통합 오버라이드는 컷신 26개와 주민 답변 54개, 총 80개 레코드여야 한다. 출력 크기는 원본과 같은 395,981바이트이고 모든 `#키` 헤더의 바이트 오프셋이 같아야 한다. 주민 답변은 일반 인게임 렌더러를 사용하므로 `CUTSCN.CCH`는 다시 만들지 않는다. `apply_catalog.py`는 이름·장소 등 일반 자리표시자의 종류와 횟수를 엄격히 검증하지만, `TEMPLATE.DAT`의 절차 생성 영문 조각 `%oc`, `%doc`, `%jok`, `%oth`는 번역이 의미를 대신할 때에만 원문보다 적게 사용할 수 있다. 번역 쪽에서 새로 추가하는 것은 허용하지 않는다. 장소 목록 두 표와 `%di`의 8방향 표는 `patch_acd.py`의 `GAMEPLAY_NAME_TABLES`에 있으므로 `ACDKR.EXE`도 함께 다시 빌드한다.
+결과 `data\loose\TEMPLATE.DAT`를 `ARENA_KR\TEMPL_KR.DAT`로 배치한다. 출력 크기는 원본과 같은 395,981바이트이고 모든 `#키` 헤더의 바이트 오프셋이 같아야 한다. 주민 답변은 일반 인게임 렌더러를 사용하므로 `CUTSCN.CCH`는 다시 만들지 않는다. `apply_catalog.py`는 이름·장소 등 일반 자리표시자의 종류와 횟수를 엄격히 검증하지만, `TEMPLATE.DAT`의 절차 생성 영문 조각 `%oc`, `%doc`, `%jok`, `%oth`는 번역이 의미를 대신할 때에만 원문보다 적게 사용할 수 있다. 번역 쪽에서 새로 추가하는 것은 허용하지 않는다. 장소 목록 두 표와 `%di`의 8방향 표는 `patch_acd.py`의 `GAMEPLAY_NAME_TABLES`에 있으므로 `ACDKR.EXE`도 함께 다시 빌드한다.
+
+전체 NPC 범위와 상태표, 거래·TEMPLATE 인덱스 번역은 다음 명령으로 검증용 오버라이드와 문서를 만든다.
+
+```powershell
+python .\elder-scrolls-arena-korean\tools\build_npc_dialogue_inventory.py `
+  --catalog .\arena-korean-work\translations-private\catalog-full.jsonl `
+  --scope .\elder-scrolls-arena-korean\translations\npc-dialogue-scope.json `
+  --output .\elder-scrolls-arena-korean\docs\NPC_DIALOGUE_SCOPE.ko.md
+
+python .\elder-scrolls-arena-korean\tools\build_npc_trade_revoice.py `
+  --catalog .\arena-korean-work\translations-private\catalog-full.jsonl `
+  --source .\elder-scrolls-arena-korean\translations\npc-trade-revoice-by-index.json `
+  --output .\arena-korean-work\build\npc-trade-revoice-overrides.json
+
+python .\elder-scrolls-arena-korean\tools\build_npc_template_revoice.py `
+  --catalog .\arena-korean-work\translations-private\catalog-full.jsonl `
+  --source .\elder-scrolls-arena-korean\translations\npc-template-revoice-by-index.json `
+  --output .\arena-korean-work\build\npc-template-revoice-overrides.json
+```
 
 ## BSA 작업
 
